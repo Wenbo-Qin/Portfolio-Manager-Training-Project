@@ -1,0 +1,89 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+    <!-- 主要内容区域 -->
+    <div class="mainbox">
+        <ul class="clearfix">   <!-- 使用clearfix清除浮动 -->
+
+            <li>
+                <!-- 第一个数据卡片：标题样式（ECharts图表容器） -->
+                <div class="boxall" style="height:400px;">
+                    <div class="alltitle">功能区</div>
+<!--                    <div class="navboxall" id="echart5"></div>-->
+                    <div class="navboxall" style="display:flex; justify-content:center; align-items:center; height:calc(100% - 30px); gap:20px;">
+                        <a href="page1.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#49bcf7; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面1</a>
+                        <a href="page2.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#f78c44; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面2</a>
+                        <a href="page3.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#5ea99c; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面3</a>
+                    </div>
+                </div>
+
+            <!-- 第二列内容 -->
+            <li>
+                <!-- 第一个数据卡片：总资产数据及指标占比 -->
+                <div class="boxall" style="height:230px">
+                    <div class="clearfix navboxall" style="height: 100%">
+                        <!-- 总资产数据 -->
+                        <div class="pulll_left num">
+                            <div class="numbt">总资产数据<span>(单位：元)</span></div>
+                            <div class="numtxt">52013</div>
+                        </div>
+                        <div class="pulll_right zhibiao">
+                            <div class="zb1"><span>股票投资</span>
+                                <div id="zb1"></div>
+                            </div>
+                            <div class="zb2"><span>基金投资</span>
+                                <div id="zb2"></div>
+                            </div>
+                            <div class="zb3"><span>其他投资</span>
+                                <div id="zb3"></div>
+                            </div>
+                            <div class="zb4"><span>流动资金</span>
+                                <div id="zb4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第二个数据卡片：数据报表（ECharts图表容器） -->
+                <div class="boxall" style="height:350px">
+                    <div class="alltitle">数据报表</div>
+                    <div class="navboxall" id="echart4"></div>
+                </div>
+
+                <!-- 第三个数据卡片：折线图（ECharts图表容器） -->
+                <div class="boxall" style="height:340px">
+                    <div class="alltitle">折线图</div>
+                    <div class="navboxall" id="echart3"></div>
+                </div>
+
+            </li>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+
+<!-- 初始化滚动插件的脚本 -->
+<script>
+    $(function () {
+        $('.wrap,.adduser').liMarquee({
+            direction: 'up',//身上滚动
+            runshort: false,//内容不足时不滚动
+            scrollamount: 20//速度
+        });
+    });
+</script>
+
+</body>
+<head>
+    
+</head>
+</html>
