@@ -3,10 +3,48 @@
 <head>
     <meta charset="utf-8">
     <title></title>
-    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/js.js"></script>
+    <script type="text/javascript" src="js/jquery.limarquee.js"></script>
+    <script type="text/javascript" src="js/jquery.cxselect.min.js"></script>
+
+    <link rel="stylesheet" href="css/comon0.css">
 </head>
 <body>
 
+<!-- 页面背景容器，使用深蓝色背景和中心顶部背景图 -->
+<div style="background:#000d4a url(images/bg.jpg) center top;">
+    <!-- 页面加载动画 -->
+    <!-- <div class="loading">
+        <div class="loadbox"><img src="./loading.gif"> 页面加载中...</div>
+    </div>
+    <div class="back"></div> -->
+
+    <!-- 页面头部区域 -->
+    <div class="head">
+        <div class="weather">
+            <span id="showTime"></span></div>  <!-- 显示时间的容器 -->
+        <h1><a style="color: white">资产情况</a></h1>
+    </div>
+
+    <!-- 时间显示脚本 -->
+    <script>
+        var t = null;
+        t = setTimeout(time, 1000);//開始运行
+        function time() {
+            clearTimeout(t);//清除定时器
+            dt = new Date();
+            var y = dt.getFullYear();
+            var mt = dt.getMonth() + 1;
+            var day = dt.getDate();
+            var h = dt.getHours();//获取时
+            var m = dt.getMinutes();//获取分
+            var s = dt.getSeconds();//获取秒
+            document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+            t = setTimeout(time, 1000); //设定定时器，循环运行
+        }
+    </script>
 
     <!-- 主要内容区域 -->
     <div class="mainbox">
@@ -18,11 +56,47 @@
                     <div class="alltitle">功能区</div>
 <!--                    <div class="navboxall" id="echart5"></div>-->
                     <div class="navboxall" style="display:flex; justify-content:center; align-items:center; height:calc(100% - 30px); gap:20px;">
-                        <a href="page1.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#49bcf7; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面1</a>
+                        <a href="/details/views/chronic.html" target="_blank" style="width:120px; height:70px; line-height:70px; text-align:center; background:#49bcf7; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面1</a>
                         <a href="page2.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#f78c44; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面2</a>
                         <a href="page3.html" style="width:120px; height:70px; line-height:70px; text-align:center; background:#5ea99c; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">页面3</a>
                     </div>
                 </div>
+
+                <!-- 第二个数据卡片：基金信息列表 -->
+                <div class="boxall" style="height:535px;">
+                    <div class="alltitle">基金</div>
+                    <div class="navboxall">
+                        <div class="wraptit">  <!-- 列表标题行 -->
+                            <span>单号</span><span>金额</span><span>品名</span><span>时间</span>
+                        </div>
+                        <div class="wrap">  <!-- 列表内容区域（将通过插件实现向上滚动） -->
+                            <ul>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                                <li><p><span>100021415</span><span>199</span><span>手机</span><span>18小时</span></p></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+<!--                <div class="boxall" style="height:260px;">-->
+<!--                    <div class="alltitle">资产分布</div>-->
+<!--                    <div class="navboxall" id="echart2"></div>-->
+<!--                </div>-->
+
+            </li>
+
 
             <!-- 第二列内容 -->
             <li>
@@ -31,8 +105,9 @@
                     <div class="clearfix navboxall" style="height: 100%">
                         <!-- 总资产数据 -->
                         <div class="pulll_left num">
-                            <div class="numbt">总资产数据<span>(单位：元)</span></div>
-                            <div class="numtxt">52013</div>
+                            <div class="numbt">总资产数据<span>(单位：万元)</span></div>
+                            <!-- <div class="numtxt">52013</div> -->
+                             <div class="numtxt" id="totalAsset"></div>
                         </div>
                         <div class="pulll_right zhibiao">
                             <div class="zb1"><span>股票投资</span>
@@ -64,6 +139,114 @@
                 </div>
 
             </li>
+
+
+            <!-- 第三列内容 -->
+            <li>
+                <!-- 第一个数据卡片：港股看板（表格） -->
+                <div class="boxall" style="height:300px">
+                    <div class="alltitle">港股看板</div>
+                    <div class="navboxall">
+                        <table class="table1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                                <th scope="col">排名</th>
+                                <th scope="col">公司</th>
+                                <th scope="col">数量</th>
+                                <th scope="col">增长率</th>
+                            </tr>
+                            <tr>
+                                <td><span>1</span></td>
+                                <td>腾讯科技</td>
+                                <td>114万<br></td>
+                                <td>100%<br></td>
+                            </tr>
+                            <tr>
+                                <td><span>2</span></td>
+                                <td>百度公司</td>
+                                <td>923823万</td>
+                                <td>21%</td>
+                            </tr>
+
+                            <tr>
+                                <td><span>3</span></td>
+                                <td>新浪</td>
+                                <td>1240253万</td>
+                                <td>12%</td>
+                            </tr>
+                            <tr>
+                                <td><span>4</span></td>
+                                <td>网易</td>
+                                <td>1.2亿</td>
+                                <td>39%</td>
+                            </tr>
+                            <tr>
+                                <td><span>5</span></td>
+                                <td>雅虎</td>
+                                <td>13423万</td>
+                                <td>9%</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 第二个数据卡片：A股看板（表格） -->
+                <div class="boxall" style="height: 300px">
+                    <div class="alltitle">A股看板</div>
+                    <div class="navboxall">
+                        <table class="table1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                                <th scope="col">排名</th>
+                                <th scope="col">公司</th>
+                                <th scope="col">数量</th>
+                                <th scope="col">增长率</th>
+                            </tr>
+                            <tr>
+                                <td><span>1</span></td>
+                                <td>腾讯科技</td>
+                                <td>114万<br></td>
+                                <td>100%<br></td>
+                            </tr>
+                            <tr>
+                                <td><span>2</span></td>
+                                <td>百度公司</td>
+                                <td>923823万</td>
+                                <td>21%</td>
+                            </tr>
+
+                            <tr>
+                                <td><span>3</span></td>
+                                <td>新浪</td>
+                                <td>1240253万</td>
+                                <td>12%</td>
+                            </tr>
+                            <tr>
+                                <td><span>4</span></td>
+                                <td>网易</td>
+                                <td>1.2亿</td>
+                                <td>39%</td>
+                            </tr>
+                            <tr>
+                                <td><span>5</span></td>
+                                <td>雅虎</td>
+                                <td>13423万</td>
+                                <td>9%</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="boxall" style="height:320px;">
+                    <div class="alltitle">资产分布</div>
+                    <div class="navboxall" id="echart1"></div>
+                </div>
+
             </li>
         </ul>
 
@@ -83,7 +266,4 @@
 </script>
 
 </body>
-<head>
-    
-</head>
 </html>
