@@ -47,8 +47,8 @@ $(function () {
                     itemHeight: 10,
                     itemGap: 10,
                     textStyle: {
-                        color: 'rgba(255,255,255,.9)',
-                        fontSize: 14
+                        color: 'rgba(255,255,255,.6)',
+                        fontSize: 12
                     },
                     orient: 'vertical',
                     data: ['股票', '基金', '黄金', '债券', '流动资金'] // 恢复图例数据
@@ -175,8 +175,7 @@ $(function () {
                     // right: '35%',
                     top: '0',
                     textStyle: {
-                        color: "#fff",
-                        fontSize: 15    //新设置的字体
+                        color: "#fff"
                     },
                     // itemWidth: 15,
                     // itemHeight: 15,
@@ -195,8 +194,7 @@ $(function () {
                     axisLabel: {
                         show: true,
                         textStyle: {
-                            color: 'rgba(255,255,255,.6)',
-                            fontSize: 14
+                            color: 'rgba(255,255,255,.6)'
                         }
                     },
                     axisLine: {
@@ -224,7 +222,7 @@ $(function () {
                         }
                     },
                     // 新增：固定 Y 轴最大值为 200
-                    max: 180
+                        max: 180
                 }],
                 series: [{
                     name: '股票',
@@ -453,8 +451,7 @@ $(function () {
                     ],
                     "top": "0%",
                     "textStyle": {
-                        "color": "rgba(255,255,255,0.9)",  //图例文字
-                        "fontSize": 15 // 新设置的字体
+                        "color": "rgba(255,255,255,0.9)"//图例文字
                     }
                 },
 
@@ -493,7 +490,7 @@ $(function () {
 
                         },
                         axisLine: { lineStyle: { color: 'rgba(255,255,255,.4)' } },//右线色
-                        splitLine: { show: false, lineStyle: { color: '#878787' } },//x轴线
+                        splitLine: { show: true, lineStyle: { color: "#001e94" } },//x轴线
                     },
                 ],
                 "grid": {
@@ -963,6 +960,7 @@ $(function () {
             myChart.resize();
         });
     }
+<<<<<<< HEAD
 
     // ========== 港股/A股 看板 动态渲染 ==========
 
@@ -1070,4 +1068,109 @@ $(function () {
 
 
 
+=======
+});
+
+// 单独初始化echart5
+// $(function () {
+//     echarts_5();
+
+//     function echarts_5() {
+//         // 基于准备好的dom，初始化echarts实例
+//         var myChart = echarts.init(document.getElementById('echart5'));
+//         // 颜色
+//         var lightBlue = {
+//             type: 'linear',
+//             x: 0,
+//             y: 0,
+//             x2: 0,
+//             y2: 1,
+//             colorStops: [{
+//                 offset: 0,
+//                 color: 'rgba(41, 121, 255, 1)'
+//             }, {
+//                 offset: 1,
+//                 color: 'rgba(0, 192, 255, 1)'
+//             }],
+//             globalCoord: false
+//         }
+
+//         var option = {
+//             tooltip: {
+//                 show: false
+//             },
+//             grid: {
+//                 top: '0%',
+//                 left: '65',
+//                 right: '14%',
+//                 bottom: '0%',
+//             },
+//             xAxis: {
+//                 min: 0,
+//                 max: 100,
+//                 splitLine: {
+//                     show: false
+//                 },
+//                 axisTick: {
+//                     show: false
+//                 },
+//                 axisLine: {
+//                     show: false
+//                 },
+//                 axisLabel: {
+//                     show: false
+//                 }
+//             },
+//             yAxis: {
+//                 data: ['字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称', '字段名称'],
+//                 //offset: 15,
+//                 axisTick: {
+//                     show: false
+//                 },
+//                 axisLine: {
+//                     show: false
+//                 },
+//                 axisLabel: {
+//                     color: 'rgba(255,255,255,.6)',
+//                     fontSize: 14
+//                 }
+//             },
+//             series: [{
+//                 type: 'bar',
+//                 label: {
+//                     show: true,
+//                     zlevel: 10000,
+//                     position: 'right',
+//                     padding: 10,
+//                     color: '#49bcf7',
+//                     fontSize: 14,
+//                     formatter: '{c}%'
+
+//                 },
+//                 itemStyle: {
+//                     color: '#49bcf7'
+//                 },
+//                 barWidth: '15',
+//                 data: [49, 80, 67, 99, 12, 19, 39, 84, 28, 47, 57, 100],
+//                 z: 10
+//             }, {
+//                 type: 'bar',
+//                 barGap: '-100%',
+//                 itemStyle: {
+//                     color: '#fff',
+//                     opacity: 0.1
+//                 },
+//                 barWidth: '15',
+//                 data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+//                 z: 5
+//             }],
+//         };
+//         // 使用刚指定的配置项和数据显示图表。
+//         myChart.setOption(option);
+//         window.addEventListener("resize", function () {
+//             myChart.resize();
+//         });
+//     }
+// });
+>>>>>>> master
 

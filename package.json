@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
@@ -18,6 +19,11 @@
     "mysql2": "^3.14.2",
     "node-cron": "^4.2.1",
     "yahoo-finance2": "^2.13.3"
+=======
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.2"
+>>>>>>> master
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

@@ -1,276 +1,115 @@
-$(function () {
+// $(function(){
+//   var Theight = $(window).height() - 260;
+//   $(".div_any_child").height(Theight);
+//   totalPage = 9;
+//   currentPage = 1;
+//   paging(totalPage,currentPage);
+// })
+
+
+$(function(){
+    // 原有逻辑：设置高度
     var Theight = $(window).height() - 260;
     $(".div_any_child").height(Theight);
-
-    // 分页核心参数（全局变量，确保作用域正确）
-    let currentPage = 1;       // 当前页码，初始为1
-    const pageSize = 10;       // 每页显示条数
-    let isLoading = false;     // 防止重复请求的锁
-    let deleteTarget = null;   // 当前要删除的目标
-
-    // 初始化分页组件
-    function initPagination(totalPages, totalRecords) {
-        totalPages = Math.max(Number(totalPages) || 1, 1); // 确保总页数至少为1
-        totalRecords = Number(totalRecords) || 0;
-
-        // 先销毁旧实例（如果存在）
-        if ($('#pagination').data('pagination')) {
-            $('#pagination').pagination('destroy');
-        }
-
-        // 重新初始化分页组件
+    
+    // 分页参数
+    var totalPage = 9;
+    var currentPage = 1;
+    var pageSize = 10; // 每页条数
+    
+    // 分页函数
+    function paging(total, current) {
         $('#pagination').pagination({
-            dataSource: function(done) {
-                // 创建一个简单的数组作为数据源，长度等于总记录数
-                var result = [];
-                for (var i = 1; i <= totalRecords; i++) {
-                    result.push(i);
-                }
-                done(result);
-            },
-            pageSize: pageSize,
-            pageNumber: currentPage,
-            showInfo: true,
-            showJump: true,
-            showPageSizes: true,
-            pageRange: 5,
-            homePageText: "首页",
-            endPageText: "尾页",
-            prevPageText: "上一页",
-            nextPageText: "下一页",
-            callback: function (data, pagination) {
-                var selectedPage = pagination.pageNumber;
-                if (selectedPage !== currentPage && !isLoading) {
-                    currentPage = selectedPage;
-                    loadData();
-                }
+            totalData: total * pageSize,
+            showData: pageSize,
+            current: current,
+            coping: true,
+            homePage: '首页',
+            endPage: '末页',
+            prevContent: '上一页',
+            nextContent: '下一页',
+            callback: function(api) {
+                currentPage = api.getCurrent();
+                loadData(); // 分页切换时加载数据
             }
         });
     }
-
+    
     // 加载数据函数
     function loadData() {
-        // 防止重复请求
-        if (isLoading) return;
-        isLoading = true;
-
         // 显示加载状态
-        $('#tableBody').html('<tr><td colspan="8" style="text-align:center">加载中...</td></tr>');
-
-        // 构造请求参数
-        const requestParams = {
+        $('#tableBody').html('<tr><td colspan="7" style="text-align:center">加载中...</td></tr>');
+        
+        $.get('/api/asset-details', {
             page: currentPage,
-            pageSize: pageSize,
-            t: new Date().getTime() // 禁用缓存
-        };
-   
-        $.get('/api/asset-details', requestParams)
-            .done(function (res) {
-                console.log('后端响应:', res);
-                processResponse(res);
-            })
-            .fail(function (xhr) {
-                console.error('请求失败:', xhr);
-                $('#tableBody').html(`<tr><td colspan="8" style="text-align:center">请求失败：${xhr.statusText}</td></tr>`);
-                
-                // 即使请求失败也显示分页控件
-                initPagination(1, 0);
-            })
-            .always(function () {
-                // 无论成功失败，都释放加载锁
-                isLoading = false;
-            });
-    }
-    
-    // 处理响应数据的函数
-    function processResponse(res) {
-        // 验证响应格式
-        if (!res || res.success !== true || !res.data) {
-            $('#tableBody').html('<tr><td colspan="8" style="text-align:center">数据加载失败</td></tr>');
-            // 即使数据加载失败也显示分页控件
-            initPagination(1, 0);
-            return;
-        }
-
-        const dataList = res.data.list || [];
-        const pagination = res.data.pagination || {};
-        const tableBody = $('#tableBody').empty();
-
-        // 渲染数据
-        if (dataList.length === 0) {
-            tableBody.append('<tr><td colspan="8" style="text-align:center">暂无数据</td></tr>');
-        } else {
-            dataList.forEach(function (item, index) {
-                const serialNumber = (pagination.currentPage - 1) * pagination.pageSize + index + 1;
-                const row = `<tr>
-                    <td>${serialNumber}</td>
-                    <td>${item.stat_month || '-'}</td>
-                    <td>${item.stock || '0'}</td>
-                    <td>${item.fund || '0'}</td>
-                    <td>${item.gold || '0'}</td>
-                    <td>${item.bond || '0'}</td>
-                    <td>${item.liquid_funds || '0'}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">删除</button>
-                    </td>
-                </tr>`;
+            pageSize: pageSize
+        }, function(res) {
+            // 先检查响应是否有效
+            if (!res || typeof res !== 'object') {
+                $('#tableBody').html('<tr><td colspan="7" style="text-align:center">数据格式错误</td></tr>');
+                return;
+            }
+            
+            // 检查业务是否成功
+            if (!res.success) {
+                $('#tableBody').html('<tr><td colspan="7" style="text-align:center">'+ (res.error || '加载失败') +'</td></tr>');
+                return;
+            }
+            
+            // 检查数据结构是否完整
+            if (!res.data || !Array.isArray(res.data.list)) {
+                $('#tableBody').html('<tr><td colspan="7" style="text-align:center">数据结构异常</td></tr>');
+                return;
+            }
+            
+            var data = res.data.list;
+            var total = res.data.total || 0;
+            var tableBody = $('#tableBody');
+            tableBody.empty();
+            
+            // 处理无数据情况
+            if (data.length === 0) {
+                tableBody.append('<tr><td colspan="7" style="text-align:center">暂无数据</td></tr>');
+                return;
+            }
+            
+            // 渲染表格数据
+            data.forEach(function(item, index) {
+                var serialNumber = (currentPage - 1) * pageSize + index + 1;
+                var row = '<tr>' +
+                    '<td>' + serialNumber + '</td>' +
+                    '<td>' + (item.stat_month || '-') + '</td>' +  // 匹配后端的stat_month字段
+                    '<td>' + (item.stock || '0') + '</td>' +
+                    '<td>' + (item.fund || '0') + '</td>' +
+                    '<td>' + (item.gold || '0') + '</td>' +
+                    '<td>' + (item.bond || '0') + '</td>' +
+                    '<td>' + (item.liquid_funds || '0') + '</td>' +  // 补充流动资金字段
+                    '<td><button class="btn btn-primary btn-sm">删除</button></td>' +
+                '</tr>';
                 tableBody.append(row);
             });
             
-            // 绑定删除按钮事件
-            $('.delete-btn').on('click', function() {
-                const id = $(this).data('id');
-                showDeleteConfirm(id);
-            });
-        }
-
-        // 初始化分页（使用后端返回的分页信息）
-        initPagination(pagination.totalPages, pagination.totalRecords);
-    }
-
-    // 显示删除确认对话框
-    function showDeleteConfirm(id) {
-        deleteTarget = id;
-        $('#deleteConfirmModal').show();
-        $('#modalOverlay').show();
-    }
-
-    // 执行删除操作
-    function performDelete() {
-        if (!deleteTarget) return;
-
-        // 发送删除请求
-        $.ajax({
-            url: '/api/asset-details',
-            method: 'DELETE',
-            contentType: 'application/json',
-            data: JSON.stringify({ id: deleteTarget }),
-            success: function(res) {
-                if (res.success) {
-                    // 删除成功，重新加载当前页数据
-                    loadData();
-                    alert('删除成功');
-                } else {
-                    alert('删除失败: ' + res.error);
-                }
-            },
-            error: function(xhr) {
-                alert('删除请求失败: ' + xhr.statusText);
-            },
-            complete: function() {
-                // 隐藏确认对话框
-                hideDeleteConfirm();
-            }
+            // 更新分页信息
+            totalPage = Math.ceil(total / pageSize);
+            paging(totalPage, currentPage);
+        }).fail(function() {
+            $('#tableBody').html('<tr><td colspan="7" style="text-align:center">网络错误，请重试</td></tr>');
         });
     }
-
-    // 隐藏删除确认对话框
-    function hideDeleteConfirm() {
-        $('#deleteConfirmModal').hide();
-        $('#modalOverlay').hide();
-        deleteTarget = null;
-    }
-
-    // 绑定删除确认对话框的事件
-    $('#confirmDeleteBtn').on('click', performDelete);
-    $('#cancelDeleteBtn').on('click', hideDeleteConfirm);
-
-    // 初始加载第一页数据
-    loadData();
+    
+    // 初始化分页和加载数据
+    paging(totalPage, currentPage);
+    loadData(); // 加载第一页数据
 });
 
 function handleAdd() {
-    document.getElementById('addModal').style.display = 'block';
-    document.getElementById('modalOverlay').style.display = 'block';
-    // 设置默认时间为今天
-    document.getElementById('inputTime').valueAsDate = new Date();
-}
-
-function closeModal() {
-    // 隐藏弹窗和遮罩层，并重置表单
-    document.getElementById('addModal').style.display = 'none';
-    document.getElementById('modalOverlay').style.display = 'none';
-    document.getElementById('addForm').reset();
-    // 移除可能的验证错误样式
-    const inputs = document.getElementById('addForm').querySelectorAll('input');
-    inputs.forEach(input => {
-        input.style.borderColor = '';
-    });
-}
-
-function saveData() {
-    // 获取输入值
-    const time = document.getElementById('inputTime').value;
-    const stock = document.getElementById('inputStock').value ? Number(document.getElementById('inputStock').value) : 0;
-    const fund = document.getElementById('inputFund').value ? Number(document.getElementById('inputFund').value) : 0;
-    const gold = document.getElementById('inputGold').value ? Number(document.getElementById('inputGold').value) : 0;
-    const bond = document.getElementById('inputBond').value ? Number(document.getElementById('inputBond').value) : 0;
-    const cash = document.getElementById('inputCash').value ? Number(document.getElementById('inputCash').value) : 0;
-
-    // 验证必填字段
-    if (!time) {
-        alert('请填写时间字段');
-        return;
+    var confirmAdd = window.confirm("是否要增加？");
+    if (confirmAdd) {
+        alert("已确认增加！");
+        // 你可以在这里执行实际的增加逻辑，比如 addRow() 等
+    } else {
+        console.log("用户取消增加操作");
     }
-
-    // 构造要发送的数据对象
-    const requestData = {
-        stat_month: time,
-        stock: stock,
-        fund: fund,
-        gold: gold,
-        bond: bond,
-        liquid_funds: cash
-    };
-
-    // 发送数据到后端
-    $.ajax({
-        url: '/api/asset-details',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(requestData),
-        success: function(res) {
-            if (res.success) {
-                alert('数据添加成功');
-                closeModal();
-                // 重新加载数据以显示新添加的记录
-                loadData();
-            } else {
-                alert('添加失败: ' + (res.error || '未知错误'));
-            }
-        },
-        error: function(xhr) {
-            alert('请求失败: ' + xhr.statusText);
-        }
-    });
-    
 }
 
-function openMonthRangeModal() {
-    document.getElementById('monthRangeModal').style.display = 'block';
-    document.getElementById('modalOverlay').style.display = 'block';
-}
 
-function closeMonthRangeModal() {
-    document.getElementById('monthRangeModal').style.display = 'none';
-    document.getElementById('modalOverlay').style.display = 'none';
-}
-
-function confirmMonthRangeQuery() {
-    const start = document.getElementById('startMonth').value;
-    const end = document.getElementById('endMonth').value;
-
-    if (!start || !end) {
-        alert('请填写完整的起止月份');
-        return;
-    }
-
-    if (start > end) {
-        alert('起始月份不能晚于结束月份');
-        return;
-    }
-
-    alert('查询范围：' + start + ' 到 ' + end);
-
-    closeMonthRangeModal();
-}

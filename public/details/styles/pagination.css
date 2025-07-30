@@ -3,16 +3,7 @@
 	line-height: 34px;
 }
 
-#pagination {
-	width: 100%;
-	display: inline-block;
-}
-
 .ui-pagination-container .ui-pagination-page-item {
-	display: inline-block;
-	/* 确保页码水平排列 */
-	box-sizing: border-box;
-	
 	font-size: 14px;
 	padding: 4px 10px;
 	background: #ffffff1a;
@@ -23,10 +14,9 @@
 }
 
 .ui-pagination-container .ui-pagination-page-item:hover {
-	background: #072951;
-	border-color: #4b8df8;
-	color: #fff;
-	cursor: default;
+	border-color: #081832;
+	color: #FFF;
+	text-decoration: none;
 }
 
 .ui-pagination-container .ui-pagination-page-item.active {
@@ -41,7 +31,6 @@
 	margin: 32px auto 0;
 	height: 34px;
 }
-
 .page {
 	width: 100%;
 	text-align: center;

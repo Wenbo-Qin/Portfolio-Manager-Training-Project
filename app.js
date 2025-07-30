@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const pool = require('./db/mysql');
 const cors = require('cors'); // 如果你用了 cors
+<<<<<<< HEAD
 const { syncMarketData } = require('./services/fetchStockData');
 const cron   = require('node-cron');
 const yahooFinance = require('yahoo-finance2').default;
@@ -9,12 +10,18 @@ const iconv     = require('iconv-lite');
 // 2. 初始化 app（这一步必须在使用 app 之前）
 const app = express();
 const axios = require('axios');
+=======
+
+// 2. 初始化 app（这一步必须在使用 app 之前）
+const app = express();
+>>>>>>> master
 
 // 3. 再使用 app 进行配置
 app.use(cors()); // 启用跨域
 app.use(express.static(path.join(__dirname, 'public'))); // 配置静态资源
 app.use(express.json()); // 解析 JSON 请求体
 
+<<<<<<< HEAD
 // === 启动时 & 定时任务 定义 ===
 syncMarketData();  // 启动时先跑一次
 cron.schedule('*/5 * * * *', () => {
@@ -23,6 +30,8 @@ cron.schedule('*/5 * * * *', () => {
 });
 
 // === 路由定义 ===
+=======
+>>>>>>> master
 //获取总资产和资产分布
 app.get('/api/asset-data', async (req, res) => {
   try {
@@ -167,8 +176,12 @@ app.get('/api/annual-asset-sum', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 
 // 资产详情分页查询接口（仅分页展示所有数据）
+=======
+// 资产详情分页查询接
+>>>>>>> master
 app.get('/api/asset-details', async (req, res) => {
   try {
     // 1. 严格解析和验证分页参数（确保是整数）
@@ -176,6 +189,7 @@ app.get('/api/asset-details', async (req, res) => {
     const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize, 10) || 10)); // 限制pageSize范围1-100
     const offset = Math.max(0, (page - 1) * pageSize); // 确保offset非负
 
+<<<<<<< HEAD
     // 2. 查询总条数
     const [totalResult] = await pool.execute('SELECT COUNT(*) AS total FROM asset_monthly');
     const total = totalResult[0].total;
@@ -184,10 +198,27 @@ app.get('/api/asset-details', async (req, res) => {
     // 3. 查询当前页数据，包含id字段
     const sql = `
       SELECT id, stat_month, stock, fund, gold, bond, liquid_funds
+=======
+    // 打印参数日志，检查是否为有效数字
+    console.log('分页参数验证:', {
+      page: { value: page, type: typeof page, isInteger: Number.isInteger(page) },
+      pageSize: { value: pageSize, type: typeof pageSize, isInteger: Number.isInteger(pageSize) },
+      offset: { value: offset, type: typeof offset, isInteger: Number.isInteger(offset) }
+    });
+
+    // 2. 查询总条数
+    const [totalResult] = await pool.execute('SELECT COUNT(*) AS total FROM asset_monthly');
+    const total = totalResult[0].total;
+
+    // 3. 查询当前页数据（确保参数格式正确）
+    const sql = `
+      SELECT stat_month, stock, fund, gold, bond, liquid_funds
+>>>>>>> master
       FROM asset_monthly
       ORDER BY stat_month ASC
       LIMIT ?, ?;
     `;
+<<<<<<< HEAD
 
     // 使用数值类型参数（MySQL的LIMIT需要数值类型）
     const [data] = await pool.execute(sql, [offset + '', pageSize + '']);
@@ -210,6 +241,27 @@ app.get('/api/asset-details', async (req, res) => {
     res.status(500).json({
       success: false,
       error: '查询失败: ' + err.message,
+=======
+    
+    // 关键修复：将参数转换为整数，并显式构造数组
+    const params = [offset.toString(), pageSize.toString()];
+    console.log('传递给MySQL的参数:', params, '参数类型:', params.map(p => typeof p));
+
+    // 执行查询时显式指定参数
+    const [data] = await pool.execute({sql,values: params});
+
+    // 4. 返回数据
+    res.json({
+      success: true,
+      data: { list: data, total, page, pageSize }
+    });
+  } catch (err) {
+    console.error('接口错误详情:', err); 
+    res.status(500).json({
+      success: false,
+      error: '查询失败: ' + err.message,
+      // 开发环境下返回参数信息帮助调试
+>>>>>>> master
       debug: {
         page: req.query.page,
         pageSize: req.query.pageSize
@@ -218,6 +270,7 @@ app.get('/api/asset-details', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // 删除资产接口，使用id作为删除条件
 app.delete('/api/asset-details', async (req, res) => {
   try {
@@ -569,6 +622,9 @@ app.get('/api/SH/top', async (req, res) => {
   }
 });
 
+=======
+// 启动服务器
+>>>>>>> master
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`服务器已启动，访问地址：http://localhost:${PORT}`);
