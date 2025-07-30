@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>个人投资详情</title>
+    <link href="../styles/common.css" rel="stylesheet">
+    <link href="../styles/bootstrap.min.css" rel="stylesheet">
+    <link href="../styles/bootstrap-table.css" rel="stylesheet">
+    <link href="../styles/pagination.css" rel="stylesheet">
+    <script src="../scripts/Plugin/jquery-3.3.1.min.js"></script>
+    <script src="../scripts/Plugin/echarts.min.js"></script>
+    <script src="../scripts/Plugin/jquery.pagination.min.js"></script>
+    <script src="../scripts/common.js"></script>
+    <script src="../scripts/chronic.js"></script>
+    <style>
+        /* 表格样式优化 */
+        .table_p table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        .table_p th,
+        .table_p td {
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table_p th {
+            background-color: rgba(75, 141, 248, 0.2);
+            font-weight: bold;
+        }
+
+        .table_p tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .table_p tr:hover {
+            background-color: rgba(75, 141, 248, 0.1);
+        }
+
+        /* 分页容器样式 */
+        .box {
+            margin-top: 15px;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    
+    <!--    新增开关功能-->
+    <button id="bgToggle" class="toggle-btn"></button>
+
+    <div>
+        <!--顶部-->
+        <div class="head">
+            <div class="weather">
+                <span id="showTime" , style="font-family: '微软雅黑';"></span>
+            </div> <!-- 显示时间的容器 -->
+            <h1><a style="color: white; font-family: '微软雅黑';">资产管理</a></h1>
+        </div>
+
+        <!-- 时间显示脚本 -->
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(t);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+                t = setTimeout(time, 1000); //设定定时器，循环运行
+            }
+        </script>
+
+        <!--内容部分-->
+        <div class="con left" style="width: 98%;margin-left: 1%;margin-bottom: 25px;">
+
+            <input type="text" placeholder="请输入姓名身份证"
+                style="width: 180px;height: 28px;border-radius: 3px;text-indent: 1em;border: 1px solid #4b8df8; color: #fff;" />
+
+        <button class="btn btn-primary btn-sm" style="margin-left:20px;" onclick="openMonthRangeModal()">
+            <span class="glyphicon glyphicon-search"></span> 查询
+        </button>
+
+            <button class="btn btn-primary btn-sm" style="margin-left:20px;" onclick="handleAdd()">
+                <span class="glyphicon glyphicon-plus"></span> 增加
+            </button>
+
+            
+                        <!-- 遮罩层 -->
+            <div id="modalOverlay" style="
+                display:none; 
+                position: fixed; top:0; left:0; width:100%; height:100%;
+                background: rgba(0,0,0,0.5); z-index:999;">
+            </div>
+
+            <!-- 起止月份选择弹窗 -->
+            <div id="monthRangeModal" style="
+                display:none;
+                position: fixed; top: 50%; left: 50%; 
+                transform: translate(-50%, -50%);
+                background: white; 
+                border: 1px solid #ccc; 
+                padding: 20px; 
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            ">
+                <h4>请选择起始和结束月份</h4>
+                <label>开始月份：</label>
+                <input type="month" id="startMonth" style="font-size:16px;"><br><br>
+                <label>结束月份：</label>
+                <input type="month" id="endMonth" style="font-size:16px;"><br><br>
+                <button onclick="confirmMonthRangeQuery()">确定</button>
+                <button onclick="closeMonthRangeModal()">取消</button>
+            </div>
+
+            <div class="div_any_child">
+                <div class="table_p" style="height: 96%;margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>序号</th> <!-- 保留序号列，由前端生成 -->
+                                <th>时间</th>
+                                <th>股票</th>
+                                <th>基金</th>
+                                <th>黄金</th>
+                                <th>债券</th>
+                                <th>流动资金</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- 数据将通过JS动态渲染到这里 -->
+                            <tr>
+                                <td colspan="7" style="text-align:center">加载中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box">
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 简单弹窗表单，默认隐藏 -->
+    <div id="addModal" style="
+    display:none; 
+    position: fixed; top: 50%; left: 50%; 
+    transform: translate(-50%, -50%);
+    background: white; 
+    border: 1px solid #ccc; 
+    padding: 20px; 
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+">
+        <h3>新增资产数据</h3>
+        <form id="addForm">
+            <label>时间: <input type="date" id="inputTime" required></label><br><br>
+            <label>股票: <input type="number" id="inputStock" required></label><br><br>
+            <label>基金: <input type="number" id="inputFund" required></label><br><br>
+            <label>黄金: <input type="number" id="inputGold" required></label><br><br>
+            <label>债券: <input type="number" id="inputBond" required></label><br><br>
+            <label>流动资金: <input type="number" id="inputCash" required></label><br><br>
+            <button type="button" onclick="saveData()">保存</button>
+            <button type="button" onclick="closeModal()">取消</button>
+        </form>
+    </div>
+
+    <!-- 删除确认对话框 -->
+    <div id="deleteConfirmModal" style="
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    width: 300px;
+">
+        <h4>确认删除</h4>
+        <p>确定要删除这条记录吗？</p>
+        <button id="confirmDeleteBtn" class="btn btn-danger btn-sm">确定</button>
+        <button id="cancelDeleteBtn" class="btn btn-default btn-sm" style="margin-left: 10px;">取消</button>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div id="modalOverlay" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+"></div>
+
+    <!-- 背景切换的js设置 -->
+    <script>
+        // 页面加载时检查状态
+        if (localStorage.getItem('useDarkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // 点击切换
+        document.getElementById('bgToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));
+        });
+
+    </script>
+    
+</body>
+
+</html>
