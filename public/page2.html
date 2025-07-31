@@ -1,10 +1,525 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>删除投资项目</title>
+    <meta charset="utf-8">
+    <title>投资收益情况</title>
+    <script src="js/jquery.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/lang.js"></script>
+
+    <!-- 共用样式表，确保确保风格一致 -->
+    <link rel="stylesheet" href="css/comon0.css">
+    <style>
+        .charts { display:flex; gap:20px; margin-bottom:20px }
+        .chart  { flex:1; height:320px; background:rgba(255,255,255,0.05); border-radius:6px }
+        table {
+            width:100%;
+            border-collapse:collapse;
+            margin-top:10px;
+            border-radius: 6px; /* 表格整体圆角 */
+            overflow: hidden; /* 配合配合圆角显示 */
+            box-shadow: 0 0 15px rgba(0,0,0,0.1); /* 轻微阴影增加立体感 */
+        }
+        th,td {
+            padding: 12px 8px; /* 增加内边距 */
+            border:1px solid rgba(255,255,255,0.15); /* 浅色边框 */
+            text-align:center;
+            color: white;
+            transition: all 0.3s ease; /* 过渡动画 */
+        }
+        th {
+            background:rgba(255,255,255,0.15); /* 加深表头背景 */
+            font-weight: 600; /* 加粗表头文字 */
+        }
+        /* 移除蓝色线条 - 删除了th:after相关样式 */
+
+        /* 交替行背景色 */
+        tbody tr:nth-child(even) {
+            background: rgba(255,255,255,0.03);
+        }
+        /* 悬停效果 */
+        tbody tr:hover {
+            background: rgba(255,255,255,0.1); /* 改为白色半透明高亮 */
+            transform: translateX(3px); /* 轻微右移增强交互增强交互感 */
+        }
+        /* 数值颜色区分 - 调整颜色方案 */
+        td.positive {
+            color: #62c98d; /* 正数为绿色 */
+        }
+        td.negative {
+            color: #ff6b6b; /* 负数为红色 */
+        }
+    </style>
 </head>
 <body>
+<!-- 背景切换按钮 -->
+<button id="bgToggle" class="toggle-btn"></button>
+<!-- 新增语言切换按钮（放在bgToggle后面） -->
+<div class="lang-switch">
+    <button class="lang-btn active" data-lang="zh">中文</button>
+    <button class="lang-btn" data-lang="en">English</button>
+</div>
+<!-- 页面头部区域，与主页面保持一致 -->
+<div class="head">
+    <div class="weather"><span id="showTime"></span></div> <!-- 显示时间的容器 -->
+    <h1 data-i18n="investment-income"><a style="color: white">投资收益情况</a></h1>
+</div>
 
+<!-- 时间显示脚本，与主页面相同 -->
+<script>
+    var t = null;
+    t = setTimeout(time, 1000); //开始运行
+    function time() {
+        clearTimeout(t); //清除定时器
+        dt = new Date();
+        var y = dt.getFullYear();
+        var mt = dt.getMonth() + 1;
+        var day = dt.getDate();
+        var h = dt.getHours(); //获取时
+        var m = dt.getMinutes(); //获取分
+        var s = dt.getSeconds(); //获取秒
+        document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+        t = setTimeout(time, 1000); //设定定时器，循环运行
+    }
+</script>
+
+<!-- 主要内容区域 -->
+<div class="mainbox">
+    <div class="charts">
+        <div id="bar-latest" class="chart"></div>
+        <div id="line-trend"  class="chart"></div>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th data-i18n="month">月份</th>
+            <th data-i18n="stock">股票(%)</th>
+            <th data-i18n="bond">债券(%)</th>
+            <th data-i18n="fund">基金(%)</th>
+            <th data-i18n="gold">黄金(%)</th>
+            <th data-i18n="currency">货币(%)</th>
+            <th data-i18n="portfolio-monthly">组合当月(%)</th>
+            <th data-i18n="portfolio-cumulative">组合累计(%)</th>
+        </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+    </table>
+</div>
+
+<!-- 背景切换脚本，与主页面相同 -->
+<script>
+    // 页面加载时检查状态
+    if (localStorage.getItem('useDarkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // 点击切换
+    document.getElementById('bgToggle').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));
+    });
+</script>
+
+<script>
+    // 最新分项柱状图 - 调整颜色方案
+    $.getJSON('/api/portfolio/summary', d => {
+        if (!d.success) return;
+        echarts.init($('#bar-latest')[0]).setOption({
+            title:{ text:`最新 ${d.month}`, left:'center', top:10, textStyle:{color:'#fff'} },
+            tooltip:{ formatter:'{b}: {c}%' },
+            xAxis:{ type:'category', data:d.items.map(i=>i.asset), axisLabel:{color:'#fff'} },
+            yAxis:{ axisLabel:{formatter:v=>v+'%',color:'#fff'}, splitLine:{lineStyle:{color:'rgba(255,255,255,0.1)'}} },
+            series:[{
+                type:'bar',
+                data:d.items.map(i=>i.return),
+                itemStyle:{ color:p=> p.data>=0? '#62c98d':'#ff6b6b' } // 正数绿色，负数红色
+            }]
+        });
+    });
+
+    // 趋势折线 & 填表
+    $.getJSON('/api/portfolio/trend', d => {
+        if (!d.success) return;
+        const stats = d.stats;
+
+        // 填充表格：五项分项 + 当月 + 累计，增加正负数值颜色区分
+        stats.forEach(r => {
+            // 辅助函数：根据数值添加正负类名
+            const getValueClass = (value) => {
+                const num = parseFloat(value);
+                return num >= 0 ? 'positive' : 'negative';
+            };
+
+            $('#tbl-body').append(`
+        <tr>
+          <td>${r.month}</td>
+          <td class="${getValueClass(r.ret_stock)}">${r.ret_stock}</td>
+          <td class="${getValueClass(r.ret_bond)}">${r.ret_bond}</td>
+          <td class="${getValueClass(r.ret_fund)}">${r.ret_fund}</td>
+          <td class="${getValueClass(r.ret_gold)}">${r.ret_gold}</td>
+          <td class="${getValueClass(r.ret_liquid)}">${r.ret_liquid}</td>
+          <td class="${getValueClass(r.port_ret)}">${r.port_ret}</td>
+          <td class="${getValueClass(r.cum_ret)}">${r.cum_ret}</td>
+        </tr>
+      `);
+        });
+
+        // 绘制折线 - 调整颜色方案
+        echarts.init($('#line-trend')[0]).setOption({
+            title:{ text:'组合当月 vs 累计收益率', left:'center', top:10, textStyle:{color:'#fff'} },
+            tooltip:{ trigger:'axis',
+                formatter: pts => {
+                    const m = pts[0].axisValue;
+                    return `${m}<br>当月：${pts[0].data.toFixed(2)}%<br>累计：${pts[1].data.toFixed(2)}%`;
+                }
+            },
+            legend:{ data:['当月','累计'], top:40, textStyle:{color:'#fff'} },
+            grid:{ left:'8%', right:'6%', top:'18%', bottom:'12%', containLabel:true },
+            xAxis:{
+                type:'category',
+                data: stats.map(r=>r.month),
+                axisLabel:{ color:'#ccc', rotate:45 },
+                axisLine:{ lineStyle:{color:'#555'} }
+            },
+            yAxis:{
+                type:'value',
+                axisLabel:{ formatter:v=>v+'%', color:'#ccc' },
+                splitLine:{ lineStyle:{color:'rgba(255,255,255,0.1)'} },
+                axisLine:{ show:false }
+            },
+            series:[
+                {
+                    name:'当月',
+                    type:'line',
+                    smooth:true,
+                    symbol:'circle',
+                    symbolSize:8,
+                    lineStyle:{width:2, color:'#62c98d'}, // 改为绿色
+                    itemStyle:{color:'#62c98d'},
+                    data: stats.map(r=>r.port_ret)
+                },
+                {
+                    name:'累计',
+                    type:'line',
+                    smooth:true,
+                    symbol:'diamond',
+                    symbolSize:8,
+                    lineStyle:{width:2, color:'#f5a623'},
+                    itemStyle:{color:'#f5a623'},
+                    data: stats.map(r=>r.cum_ret)
+                }
+            ]
+        });
+    });
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="zh">-->
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    <title>投资收益情况</title>-->
+<!--    <script src="js/jquery.js"></script>-->
+<!--    <script src="js/echarts.min.js"></script>-->
+<!--    &lt;!&ndash; 共用样式表，确保风格一致 &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="css/comon0.css">-->
+<!--    <style>-->
+<!--        .charts { display:flex; gap:20px; margin-bottom:20px }-->
+<!--        .chart  { flex:1; height:320px; background:rgba(255,255,255,0.05); border-radius:6px }-->
+<!--        table { width:100%; border-collapse:collapse; margin-top:10px }-->
+<!--        th,td {-->
+<!--            padding:8px;-->
+<!--            border:1px solid rgba(255,255,255,0.2);-->
+<!--            text-align:center;-->
+<!--            color: white; /* 新增：将表格文字设置为白色 */-->
+<!--        }-->
+<!--        th    { background:rgba(255,255,255,0.1) }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash; 背景切换按钮 &ndash;&gt;-->
+<!--<button id="bgToggle" class="toggle-btn"></button>-->
+
+<!--&lt;!&ndash; 页面头部区域，与主页面保持一致 &ndash;&gt;-->
+<!--<div class="head">-->
+<!--    <div class="weather"><span id="showTime"></span></div> &lt;!&ndash; 显示时间的容器 &ndash;&gt;-->
+<!--    <h1><a style="color: white">投资收益情况</a></h1>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 时间显示脚本，与主页面相同 &ndash;&gt;-->
+<!--<script>-->
+<!--    var t = null;-->
+<!--    t = setTimeout(time, 1000); //开始运行-->
+<!--    function time() {-->
+<!--        clearTimeout(t); //清除定时器-->
+<!--        dt = new Date();-->
+<!--        var y = dt.getFullYear();-->
+<!--        var mt = dt.getMonth() + 1;-->
+<!--        var day = dt.getDate();-->
+<!--        var h = dt.getHours(); //获取时-->
+<!--        var m = dt.getMinutes(); //获取分-->
+<!--        var s = dt.getSeconds(); //获取秒-->
+<!--        document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";-->
+<!--        t = setTimeout(time, 1000); //设定定时器，循环运行-->
+<!--    }-->
+<!--</script>-->
+
+<!--&lt;!&ndash; 主要内容区域 &ndash;&gt;-->
+<!--<div class="mainbox">-->
+<!--    <div class="charts">-->
+<!--        <div id="bar-latest" class="chart"></div>-->
+<!--        <div id="line-trend"  class="chart"></div>-->
+<!--    </div>-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>月份</th>-->
+<!--            <th>股票(%)</th><th>债券(%)</th><th>基金(%)</th>-->
+<!--            <th>黄金(%)</th><th>货币(%)</th>-->
+<!--            <th>组合当月(%)</th><th>组合累计(%)</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody id="tbl-body"></tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 背景切换脚本，与主页面相同 &ndash;&gt;-->
+<!--<script>-->
+<!--    // 页面加载时检查状态-->
+<!--    if (localStorage.getItem('useDarkMode') === 'true') {-->
+<!--        document.body.classList.add('dark-mode');-->
+<!--    }-->
+
+<!--    // 点击切换-->
+<!--    document.getElementById('bgToggle').addEventListener('click', function () {-->
+<!--        document.body.classList.toggle('dark-mode');-->
+<!--        localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));-->
+<!--    });-->
+<!--</script>-->
+
+<!--<script>-->
+<!--    // 最新分项柱状图-->
+<!--    $.getJSON('/api/portfolio/summary', d => {-->
+<!--        if (!d.success) return;-->
+<!--        echarts.init($('#bar-latest')[0]).setOption({-->
+<!--            title:{ text:`最新 ${d.month}`, left:'center', top:10, textStyle:{color:'#fff'} },-->
+<!--            tooltip:{ formatter:'{b}: {c}%' },-->
+<!--            xAxis:{ type:'category', data:d.items.map(i=>i.asset), axisLabel:{color:'#fff'} },-->
+<!--            yAxis:{ axisLabel:{formatter:v=>v+'%',color:'#fff'}, splitLine:{lineStyle:{color:'rgba(255,255,255,0.1)'}} },-->
+<!--            series:[{-->
+<!--                type:'bar',-->
+<!--                data:d.items.map(i=>i.return),-->
+<!--                itemStyle:{ color:p=> p.data>=0? '#4fd1f9':'#ff6b6b' }-->
+<!--            }]-->
+<!--        });-->
+<!--    });-->
+
+<!--    // 趋势折线 & 填表-->
+<!--    $.getJSON('/api/portfolio/trend', d => {-->
+<!--        if (!d.success) return;-->
+<!--        const stats = d.stats;-->
+
+<!--        // 填充表格：五项分项 + 当月 + 累计-->
+<!--        stats.forEach(r => {-->
+<!--            $('#tbl-body').append(`-->
+<!--        <tr>-->
+<!--          <td>${r.month}</td>-->
+<!--          <td>${r.ret_stock}</td>-->
+<!--          <td>${r.ret_bond}</td>-->
+<!--          <td>${r.ret_fund}</td>-->
+<!--          <td>${r.ret_gold}</td>-->
+<!--          <td>${r.ret_liquid}</td>-->
+<!--          <td>${r.port_ret}</td>-->
+<!--          <td>${r.cum_ret}</td>-->
+<!--        </tr>-->
+<!--      `);-->
+<!--        });-->
+
+<!--        // 绘制折线-->
+<!--        echarts.init($('#line-trend')[0]).setOption({-->
+<!--            title:{ text:'组合当月 vs 累计收益率', left:'center', top:10, textStyle:{color:'#fff'} },-->
+<!--            tooltip:{ trigger:'axis',-->
+<!--                formatter: pts => {-->
+<!--                    const m = pts[0].axisValue;-->
+<!--                    return `${m}<br>当月：${pts[0].data.toFixed(2)}%<br>累计：${pts[1].data.toFixed(2)}%`;-->
+<!--                }-->
+<!--            },-->
+<!--            legend:{ data:['当月','累计'], top:40, textStyle:{color:'#fff'} },-->
+<!--            grid:{ left:'8%', right:'6%', top:'18%', bottom:'12%', containLabel:true },-->
+<!--            xAxis:{-->
+<!--                type:'category',-->
+<!--                data: stats.map(r=>r.month),-->
+<!--                axisLabel:{ color:'#ccc', rotate:45 },-->
+<!--                axisLine:{ lineStyle:{color:'#555'} }-->
+<!--            },-->
+<!--            yAxis:{-->
+<!--                type:'value',-->
+<!--                axisLabel:{ formatter:v=>v+'%', color:'#ccc' },-->
+<!--                splitLine:{ lineStyle:{color:'rgba(255,255,255,0.1)'} },-->
+<!--                axisLine:{ show:false }-->
+<!--            },-->
+<!--            series:[-->
+<!--                {-->
+<!--                    name:'当月',-->
+<!--                    type:'line',-->
+<!--                    smooth:true,-->
+<!--                    symbol:'circle',-->
+<!--                    symbolSize:8,-->
+<!--                    lineStyle:{width:2, color:'#4fd1f9'},-->
+<!--                    itemStyle:{color:'#4fd1f9'},-->
+<!--                    data: stats.map(r=>r.port_ret)-->
+<!--                },-->
+<!--                {-->
+<!--                    name:'累计',-->
+<!--                    type:'line',-->
+<!--                    smooth:true,-->
+<!--                    symbol:'diamond',-->
+<!--                    symbolSize:8,-->
+<!--                    lineStyle:{width:2, color:'#f5a623'},-->
+<!--                    itemStyle:{color:'#f5a623'},-->
+<!--                    data: stats.map(r=>r.cum_ret)-->
+<!--                }-->
+<!--            ]-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html lang="zh">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="utf-8">&ndash;&gt;-->
+<!--&lt;!&ndash;    <title>投资组合 & 分项收益率（高级版）</title>&ndash;&gt;-->
+<!--&lt;!&ndash;    <script src="js/jquery.js"></script>&ndash;&gt;-->
+<!--&lt;!&ndash;    <script src="js/echarts.min.js"></script>&ndash;&gt;-->
+<!--&lt;!&ndash;    <style>&ndash;&gt;-->
+<!--&lt;!&ndash;        body { background:#0e1940; color:#fff; padding:20px; font-family:Arial }&ndash;&gt;-->
+<!--&lt;!&ndash;        h1   { text-align:center; margin-bottom:20px }&ndash;&gt;-->
+<!--&lt;!&ndash;        .charts { display:flex; gap:20px; margin-bottom:20px }&ndash;&gt;-->
+<!--&lt;!&ndash;        .chart  { flex:1; height:320px; background:rgba(255,255,255,0.05); border-radius:6px }&ndash;&gt;-->
+<!--&lt;!&ndash;        table { width:100%; border-collapse:collapse; margin-top:10px }&ndash;&gt;-->
+<!--&lt;!&ndash;        th,td { padding:8px; border:1px solid rgba(255,255,255,0.2); text-align:center }&ndash;&gt;-->
+<!--&lt;!&ndash;        th    { background:rgba(255,255,255,0.1) }&ndash;&gt;-->
+<!--&lt;!&ndash;    </style>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+<!--&lt;!&ndash;<h1>投资组合 & 分项收益率（高级版）</h1>&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="charts">&ndash;&gt;-->
+<!--&lt;!&ndash;    <div id="bar-latest" class="chart"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;    <div id="line-trend"  class="chart"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--&lt;!&ndash;<table>&ndash;&gt;-->
+<!--&lt;!&ndash;    <thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>月份</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>股票(%)</th><th>债券(%)</th><th>基金(%)</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>黄金(%)</th><th>货币(%)</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>组合当月(%)</th><th>组合累计(%)</th>&ndash;&gt;-->
+<!--&lt;!&ndash;    </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;    </thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tbody id="tbl-body"></tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;</table>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    // 最新分项柱状图&ndash;&gt;-->
+<!--&lt;!&ndash;    $.getJSON('/api/portfolio/summary', d => {&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!d.success) return;&ndash;&gt;-->
+<!--&lt;!&ndash;        echarts.init($('#bar-latest')[0]).setOption({&ndash;&gt;-->
+<!--&lt;!&ndash;            title:{ text:`最新 ${d.month}`, left:'center', top:10, textStyle:{color:'#fff'} },&ndash;&gt;-->
+<!--&lt;!&ndash;            tooltip:{ formatter:'{b}: {c}%' },&ndash;&gt;-->
+<!--&lt;!&ndash;            xAxis:{ type:'category', data:d.items.map(i=>i.asset), axisLabel:{color:'#fff'} },&ndash;&gt;-->
+<!--&lt;!&ndash;            yAxis:{ axisLabel:{formatter:v=>v+'%',color:'#fff'}, splitLine:{lineStyle:{color:'rgba(255,255,255,0.1)'}} },&ndash;&gt;-->
+<!--&lt;!&ndash;            series:[{&ndash;&gt;-->
+<!--&lt;!&ndash;                type:'bar',&ndash;&gt;-->
+<!--&lt;!&ndash;                data:d.items.map(i=>i.return),&ndash;&gt;-->
+<!--&lt;!&ndash;                itemStyle:{ color:p=> p.data>=0? '#4fd1f9':'#ff6b6b' }&ndash;&gt;-->
+<!--&lt;!&ndash;            }]&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // 趋势折线 & 填表&ndash;&gt;-->
+<!--&lt;!&ndash;    $.getJSON('/api/portfolio/trend', d => {&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!d.success) return;&ndash;&gt;-->
+<!--&lt;!&ndash;        const stats = d.stats;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // 填充表格：五项分项 + 当月 + 累计&ndash;&gt;-->
+<!--&lt;!&ndash;        stats.forEach(r => {&ndash;&gt;-->
+<!--&lt;!&ndash;            $('#tbl-body').append(`&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.month}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.ret_stock}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.ret_bond}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.ret_fund}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.ret_gold}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.ret_liquid}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.port_ret}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;          <td>${r.cum_ret}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;      `);&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // 绘制折线&ndash;&gt;-->
+<!--&lt;!&ndash;        echarts.init($('#line-trend')[0]).setOption({&ndash;&gt;-->
+<!--&lt;!&ndash;            title:{ text:'组合当月 vs 累计收益率', left:'center', top:10, textStyle:{color:'#fff'} },&ndash;&gt;-->
+<!--&lt;!&ndash;            tooltip:{ trigger:'axis',&ndash;&gt;-->
+<!--&lt;!&ndash;                formatter: pts => {&ndash;&gt;-->
+<!--&lt;!&ndash;                    const m = pts[0].axisValue;&ndash;&gt;-->
+<!--&lt;!&ndash;                    return `${m}<br>当月：${pts[0].data.toFixed(2)}%<br>累计：${pts[1].data.toFixed(2)}%`;&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            },&ndash;&gt;-->
+<!--&lt;!&ndash;            legend:{ data:['当月','累计'], top:40, textStyle:{color:'#fff'} },&ndash;&gt;-->
+<!--&lt;!&ndash;            grid:{ left:'8%', right:'6%', top:'18%', bottom:'12%', containLabel:true },&ndash;&gt;-->
+<!--&lt;!&ndash;            xAxis:{&ndash;&gt;-->
+<!--&lt;!&ndash;                type:'category',&ndash;&gt;-->
+<!--&lt;!&ndash;                data: stats.map(r=>r.month),&ndash;&gt;-->
+<!--&lt;!&ndash;                axisLabel:{ color:'#ccc', rotate:45 },&ndash;&gt;-->
+<!--&lt;!&ndash;                axisLine:{ lineStyle:{color:'#555'} }&ndash;&gt;-->
+<!--&lt;!&ndash;            },&ndash;&gt;-->
+<!--&lt;!&ndash;            yAxis:{&ndash;&gt;-->
+<!--&lt;!&ndash;                type:'value',&ndash;&gt;-->
+<!--&lt;!&ndash;                axisLabel:{ formatter:v=>v+'%', color:'#ccc' },&ndash;&gt;-->
+<!--&lt;!&ndash;                splitLine:{ lineStyle:{color:'rgba(255,255,255,0.1)'} },&ndash;&gt;-->
+<!--&lt;!&ndash;                axisLine:{ show:false }&ndash;&gt;-->
+<!--&lt;!&ndash;            },&ndash;&gt;-->
+<!--&lt;!&ndash;            series:[&ndash;&gt;-->
+<!--&lt;!&ndash;                {&ndash;&gt;-->
+<!--&lt;!&ndash;                    name:'当月',&ndash;&gt;-->
+<!--&lt;!&ndash;                    type:'line',&ndash;&gt;-->
+<!--&lt;!&ndash;                    smooth:true,&ndash;&gt;-->
+<!--&lt;!&ndash;                    symbol:'circle',&ndash;&gt;-->
+<!--&lt;!&ndash;                    symbolSize:8,&ndash;&gt;-->
+<!--&lt;!&ndash;                    lineStyle:{width:2, color:'#4fd1f9'},&ndash;&gt;-->
+<!--&lt;!&ndash;                    itemStyle:{color:'#4fd1f9'},&ndash;&gt;-->
+<!--&lt;!&ndash;                    data: stats.map(r=>r.port_ret)&ndash;&gt;-->
+<!--&lt;!&ndash;                },&ndash;&gt;-->
+<!--&lt;!&ndash;                {&ndash;&gt;-->
+<!--&lt;!&ndash;                    name:'累计',&ndash;&gt;-->
+<!--&lt;!&ndash;                    type:'line',&ndash;&gt;-->
+<!--&lt;!&ndash;                    smooth:true,&ndash;&gt;-->
+<!--&lt;!&ndash;                    symbol:'diamond',&ndash;&gt;-->
+<!--&lt;!&ndash;                    symbolSize:8,&ndash;&gt;-->
+<!--&lt;!&ndash;                    lineStyle:{width:2, color:'#f5a623'},&ndash;&gt;-->
+<!--&lt;!&ndash;                    itemStyle:{color:'#f5a623'},&ndash;&gt;-->
+<!--&lt;!&ndash;                    data: stats.map(r=>r.cum_ret)&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            ]&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->

@@ -1,19 +1,32 @@
 ﻿<!doctype html>
 <html>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> master
+=======
+
+>>>>>>> 49866d0 (Added language switching function)
 <head>
     <meta charset="utf-8">
     <title></title>
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/echarts.min.js"></script>
+<<<<<<< HEAD
     <script type="text/javascript" src="js/js.js"></script>
     <script type="text/javascript" src="js/jquery.limarquee.js"></script>
     <script type="text/javascript" src="js/jquery.cxselect.min.js"></script>
 <<<<<<< HEAD
     <script type="text/javascript" src="js/fund.js"></script>
+=======
+    <!-- <script type="text/javascript" src="js/js.js"></script> -->
+    <script type="text/javascript" src="js/jquery.limarquee.js"></script>
+    <script type="text/javascript" src="js/jquery.cxselect.min.js"></script>
+    <script type="text/javascript" src="js/fund.js"></script>
+    <script type="text/javascript" src="js/lang.js"></script>
+    <script type="text/javascript" src="js/js.js"></script>
+>>>>>>> 49866d0 (Added language switching function)
 
     <link rel="stylesheet" href="css/comon0.css">
 
@@ -25,10 +38,19 @@
 
     <!--    新增开关功能-->
     <button id="bgToggle" class="toggle-btn"></button>
+<<<<<<< HEAD
+=======
+    <!-- 新增语言切换按钮（放在bgToggle后面） -->
+    <div class="lang-switch">
+        <button class="lang-btn active" data-lang="zh">中文</button>
+        <button class="lang-btn" data-lang="en">English</button>
+    </div>
+>>>>>>> 49866d0 (Added language switching function)
 
     <!-- 页面头部区域 -->
     <div class="head">
         <div class="weather"><span id="showTime"></span></div> <!-- 显示时间的容器 -->
+<<<<<<< HEAD
         <h1><a style="color: white">投资项目管理系统</a></h1>
 =======
 
@@ -50,6 +72,9 @@
             <span id="showTime"></span></div>  <!-- 显示时间的容器 -->
         <h1><a style="color: white">资产情况</a></h1>
 >>>>>>> master
+=======
+        <h1 data-i18n="portfolio management system"><a style="color: white">投资项目管理系统</a></h1>
+>>>>>>> 49866d0 (Added language switching function)
     </div>
 
     <!-- 时间显示脚本 -->
@@ -73,6 +98,9 @@
     <!-- 主要内容区域 -->
     <div class="mainbox">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 49866d0 (Added language switching function)
         <ul class="clearfix"> <!-- 使用clearfix清除浮动 -->
             <!-- 第一列内容 -->
             <li>
@@ -81,27 +109,40 @@
                 <!-- 功能区：白色字体版本 -->
                 <div class="boxall"
                     style="height:300px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;">
+<<<<<<< HEAD
                     <div class="alltitle">功能区</div>
+=======
+                    <div class="alltitle" data-i18n="function-area">功能区</div>
+>>>>>>> 49866d0 (Added language switching function)
                     <div class="navboxall"
                         style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px; height:calc(100% - 40px); box-sizing:border-box;">
                         <!-- 查询投资项目 -->
                         <a href="/details/views/chronic.html" target="_blank"
                             style="display:flex; align-items:center; justify-content:center; padding:12px; color:white; font-size:15px; font-weight:500; border-radius:8px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; border-left:4px solid #3498db;">
                             <i class="fas fa-search" style="margin-right:8px; color:#3498db;"></i>
+<<<<<<< HEAD
                             查询投资项目
+=======
+                            <span data-i18n="project-management" style="color: white;">投资项目管理</span>
+>>>>>>> 49866d0 (Added language switching function)
                         </a>
 
                         <!-- 增删投资项目 -->
                         <a href="page2.html" target="_blank"
                             style="display:flex; align-items:center; justify-content:center; padding:12px; color:white; font-size:15px; font-weight:500; border-radius:8px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; border-left:4px solid #e74c3c;">
                             <i class="fas fa-edit" style="margin-right:8px; color:#e74c3c;"></i>
+<<<<<<< HEAD
                             增删投资项目
+=======
+                            <span data-i18n="income-status" style="color: white;">投资收益情况</span>
+>>>>>>> 49866d0 (Added language switching function)
                         </a>
 
                         <!-- 股票监控列表 -->
                         <a href="add_stock.html" target="_blank"
                             style="display:flex; align-items:center; justify-content:center; padding:12px; color:white; font-size:15px; font-weight:500; border-radius:8px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; border-left:4px solid #2ecc71;">
                             <i class="fas fa-chart-line" style="margin-right:8px; color:#2ecc71;"></i>
+<<<<<<< HEAD
                             股票监控列表
                         </a>
 
@@ -110,6 +151,16 @@
                             style="display:flex; align-items:center; justify-content:center; padding:12px; color:white; font-size:15px; font-weight:500; border-radius:8px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; border-left:4px solid #f39c12;">
                             <i class="fas fa-lightbulb" style="margin-right:8px; color:#f39c12;"></i>
                             未来投资走势
+=======
+                            <span data-i18n="stock-monitor" style="color: white;">股票监控列表</span>
+                        </a>
+
+                        <!-- 投资组合评估 -->
+                        <a href="page4.html" target="_blank"
+                            style="display:flex; align-items:center; justify-content:center; padding:12px; color:white; font-size:15px; font-weight:500; border-radius:8px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; border-left:4px solid #f39c12;">
+                            <i class="fas fa-lightbulb" style="margin-right:8px; color:#f39c12;"></i>
+                            <span data-i18n="portfolio-evaluation" style="color: white;">投资组合评估</span>
+>>>>>>> 49866d0 (Added language switching function)
                         </a>
                     </div>
                 </div>
@@ -126,6 +177,7 @@
 
                 <!-- 第二个数据卡片：基金信息列表 -->
                 <div class="boxall" style="height:635px;">
+<<<<<<< HEAD
                     <div class="alltitle">基金实时行情</div>
                     <div class="navboxall">
                         <div class="wraptit fund-header"> <!-- 列表标题行 -->
@@ -134,6 +186,16 @@
                             <span>基金代码</span>
                             <span>净值</span>
                             <span>涨跌幅</span>
+=======
+                    <div class="alltitle" data-i18n="fund-market">基金实时行情</div>
+                    <div class="navboxall">
+                        <div class="wraptit fund-header"> <!-- 列表标题行 -->
+                            <span data-i18n="ranking">排名</span>
+                            <span data-i18n="fund-name">基金名称</span>
+                            <span data-i18n="fund-code">基金代码</span>
+                            <span data-i18n="net-value">净值</span>
+                            <span data-i18n="increase-decrease">涨跌幅</span>
+>>>>>>> 49866d0 (Added language switching function)
                         </div>
                         <div class="wrap fund-wrap"> <!-- 列表内容区域 -->
                             <ul id="fund-list">
@@ -148,6 +210,7 @@
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
 =======
         <ul class="clearfix">   <!-- 使用clearfix清除浮动 -->
 
@@ -196,6 +259,8 @@
 <!--                    <div class="navboxall" id="echart2"></div>-->
 <!--                </div>-->
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
 
             </li>
 
@@ -207,6 +272,7 @@
                     <div class="clearfix navboxall" style="height: 100%">
                         <!-- 总资产数据 -->
                         <div class="pulll_left num">
+<<<<<<< HEAD
                             <div class="numbt">总资产数据<span>(单位：万元)</span></div>
                             <!-- <div class="numtxt">52013</div> -->
 <<<<<<< HEAD
@@ -226,6 +292,23 @@
                                 <div id="zb3"></div>
                             </div>
                             <div class="zb4"><span>流动资金</span>
+=======
+                            <div class="numbt" data-i18n="total-asset-data">总资产数据<span>(单位：万元)</span></div>
+                            <!-- <div class="numtxt">52013</div> -->
+                            <div class="numtxt" id="totalAsset"></div>
+                        </div>
+                        <div class="pulll_right zhibiao">
+                            <div class="zb1"><span class="investment-label" data-i18n="stock-investment">股票投资</span>
+                                <div id="zb1"></div>
+                            </div>
+                            <div class="zb2"><span class="investment-label" data-i18n="fund-investment">基金投资</span>
+                                <div id="zb2"></div>
+                            </div>
+                            <div class="zb3"><span class="investment-label" data-i18n="other-investments">其他投资</span>
+                                <div id="zb3"></div>
+                            </div>
+                            <div class="zb4"><span class="investment-label" data-i18n="liquid-funds">流动资金</span>
+>>>>>>> 49866d0 (Added language switching function)
                                 <div id="zb4"></div>
                             </div>
                         </div>
@@ -235,26 +318,35 @@
                 <!-- 第二个数据卡片：数据报表（ECharts图表容器） -->
                 <div class="boxall" style="height:350px">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <div class="alltitle">总资产情况图</div>
 =======
                     <div class="alltitle">数据报表</div>
 >>>>>>> master
+=======
+                    <div class="alltitle"  data-i18n="total-asset-chart">总资产情况图</div>
+>>>>>>> 49866d0 (Added language switching function)
                     <div class="navboxall" id="echart4"></div>
                 </div>
 
                 <!-- 第三个数据卡片：折线图（ECharts图表容器） -->
                 <div class="boxall" style="height:340px">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <div class="alltitle">投资项目情况图</div>
 =======
                     <div class="alltitle">折线图</div>
 >>>>>>> master
+=======
+                    <div class="alltitle" data-i18n="investment-project-chart">投资项目情况图</div>
+>>>>>>> 49866d0 (Added language switching function)
                     <div class="navboxall" id="echart3"></div>
                 </div>
 
             </li>
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -274,10 +366,29 @@
                                     <th>公司</th>
                                     <th>数量</th>
                                     <th>增长率</th>
+=======
+
+
+            <!-- 第三列内容 -->
+            <li>
+
+                <!-- 第一个数据卡片：港股看板（表格） -->
+                <div class="boxall" style="height:300px">
+                    <div class="alltitle" data-i18n="hk-board">港股看板</div>
+                    <div class="navboxall">
+                        <table class="table1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="ranking">排名</th>
+                                    <th data-i18n="company">公司</th>
+                                    <th data-i18n="market cap">市值</th>
+                                    <th data-i18n="growth-rate">增长率(%)</th>
+>>>>>>> 49866d0 (Added language switching function)
                                 </tr>
                             </thead>
                             <tbody id="hk-tbody">
                                 <!-- 由 JS 动态渲染 -->
+<<<<<<< HEAD
 =======
                             <tbody>
                             <tr>
@@ -319,6 +430,8 @@
                             </tr>
 
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
                             </tbody>
                         </table>
                     </div>
@@ -326,20 +439,33 @@
 
                 <!-- 第二个数据卡片：A股看板（表格） -->
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div class="boxall" style="height:300px">
                     <div class="alltitle">A股看板</div>
+=======
+                <div class="boxall" style="height:300px">
+                    <div class="alltitle" data-i18n="a-share-board">A股看板</div>
+>>>>>>> 49866d0 (Added language switching function)
                     <div class="navboxall">
                         <table class="table1" width="100%" border="0" cellspacing="0" cellpadding="0">
                             <thead>
                                 <tr>
+<<<<<<< HEAD
                                     <th>排名</th>
                                     <th>公司</th>
                                     <th>数量</th>
                                     <th>增长率</th>
+=======
+                                    <th data-i18n="ranking">排名</th>
+                                    <th data-i18n="company">公司</th>
+                                    <th data-i18n="market cap">市值</th>
+                                    <th data-i18n="growth-rate">增长率(%)</th>
+>>>>>>> 49866d0 (Added language switching function)
                                 </tr>
                             </thead>
                             <tbody id="sh-tbody">
                                 <!-- 由 JS 动态渲染 -->
+<<<<<<< HEAD
 =======
                 <div class="boxall" style="height: 300px">
                     <div class="alltitle">A股看板</div>
@@ -385,6 +511,8 @@
                             </tr>
 
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
                             </tbody>
                         </table>
                     </div>
@@ -392,12 +520,19 @@
                 </div>
 
                 <div class="boxall" style="height:320px;">
+<<<<<<< HEAD
                     <div class="alltitle">资产分布</div>
+=======
+                    <div class="alltitle" data-i18n="asset-distribution">资产分布</div>
+>>>>>>> 49866d0 (Added language switching function)
                     <div class="navboxall" id="echart1"></div>
                 </div>
 
             </li>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 49866d0 (Added language switching function)
 
         </ul>
 
@@ -439,6 +574,7 @@
 
 </body>
 
+<<<<<<< HEAD
 =======
         </ul>
 
@@ -459,4 +595,6 @@
 
 </body>
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
 </html>

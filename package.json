@@ -12,6 +12,9 @@
   "description": "",
   "dependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 49866d0 (Added language switching function)
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
@@ -19,11 +22,14 @@
     "mysql2": "^3.14.2",
     "node-cron": "^4.2.1",
     "yahoo-finance2": "^2.13.3"
+<<<<<<< HEAD
 =======
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mysql2": "^3.14.2"
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

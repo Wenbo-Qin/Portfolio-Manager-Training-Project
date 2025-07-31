@@ -4,10 +4,12 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool({
   host: 'localhost',         // 数据库地址（默认 localhost）
   user: 'root',              // 数据库用户名（根据你的 MySQL 配置修改）
-  password: 'root',  // 数据库密码（必填）
+  password: '123456',  // 数据库密码（必填）
   database: 'sales_data',  // 数据库名（需要先在 MySQL 中创建）
   port: 3306,                // 数据库端口（默认 3306）
-  connectionLimit: 10        // 最大连接数
+  connectionLimit: 10,        // 最大连接数
+  timezone: '+08:00',       // 设置正确的时区
+  dateStrings: ['DATE']
 });
 
 // 测试数据库连接

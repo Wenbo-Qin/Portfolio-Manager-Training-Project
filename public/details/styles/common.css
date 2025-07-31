@@ -5,6 +5,63 @@ body::-webkit-scrollbar {
    display: none;
 }
 
+<<<<<<< HEAD
+=======
+/* 分页样式 */
+.pagination {
+    display: inline-block;
+    padding-left: 0;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 24px;
+}
+
+.pagination li {
+    display: inline;
+}
+
+.pagination li a {
+    position: relative;
+    /* float: left; */
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #4b8df8;
+    text-decoration: none;
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid #4b8df8;
+}
+
+.pagination li:first-child a {
+    margin-left: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.pagination li:last-child a {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.pagination li a:hover {
+    background-color: rgba(75, 141, 248, 0.3);
+}
+
+.pagination .active a {
+    z-index: 2;
+    color: #fff;
+    background-color: #4b8df8;
+    border-color: #4b8df8;
+    cursor: default;
+}
+
+.box {
+    margin-top: 15px;
+    padding: 10px 0;
+    text-align: center;
+    clear: both;
+}
+>>>>>>> 49866d0 (Added language switching function)
 
 .anchorBL {
    display: none;
@@ -62,10 +119,38 @@ body::-webkit-scrollbar {
 ::-webkit-scrollbar-corner{background: transparent;}/* 横向滚动条和纵向滚动条相交处尖角的颜色 */
 
 body{
+<<<<<<< HEAD
     font-size: 100%;
     height: 100%;
     background-color: #081832;
 }
+=======
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    height: 100%;
+    background: #000d4a url(../images/bg.jpg) center top;
+}
+
+.head {
+    height: 105px;
+    background: #000d4a;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+
+/* 切换后的深色模式样式 */
+body.dark-mode {
+    background: #000000 url(../images/dark.jpg) center top;
+}
+
+body.dark-mode .head {
+    background: #000000;
+    /* 纯黑色 */
+}
+
+>>>>>>> 49866d0 (Added language switching function)
 a:hover{
     text-decoration: none;
 }
@@ -82,6 +167,10 @@ a:hover{
 .text_right{
     text-align: right;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49866d0 (Added language switching function)
 .header{
     width: 100%;
     height: 80px;
@@ -89,10 +178,14 @@ a:hover{
 
 }
 
+<<<<<<< HEAD
 
 
 
 .header_center{
+=======
+/* .header_center{
+>>>>>>> 49866d0 (Added language switching function)
     width: 30%;
     margin: 0px auto;
     color: #FFFFff;
@@ -106,7 +199,11 @@ a:hover{
    margin-top: 16px !important;
    font-size: 22px !important;
 
+<<<<<<< HEAD
 }
+=======
+} */
+>>>>>>> 49866d0 (Added language switching function)
 .color_font{
     color: #e8f7fe !important;
     font-size: 12px !important;
@@ -123,9 +220,15 @@ a:hover{
 
     width: 35%;
 }
+<<<<<<< HEAD
 .nav>ul{
 
 }
+=======
+/* .nav>ul{
+
+} */
+>>>>>>> 49866d0 (Added language switching function)
 .nav>ul>li{
     display: inline-block;
     width: 120px;
@@ -429,9 +532,15 @@ a:hover{
     height: 93%;
     margin-top: 7%;
     position: relative;
+<<<<<<< HEAD
 
 
 }.table_p01{
+=======
+}
+
+.table_p01{
+>>>>>>> 49866d0 (Added language switching function)
      height:auto !important;
      margin-top: 0!important;
      position: relative;
@@ -451,14 +560,22 @@ a:hover{
 }
 .table_p table thead th{
     color: #61d2f7;
+<<<<<<< HEAD
     font-size: 14px;
+=======
+    font-size: 16px;
+>>>>>>> 49866d0 (Added language switching function)
     font-weight: 600;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 .table_p table tbody{
     color: #ffffff;
+<<<<<<< HEAD
    font-size: 13px;
+=======
+   font-size: 18px;
+>>>>>>> 49866d0 (Added language switching function)
 }
 .table_p table tbody tr:nth-child(2n+1){
     background-color: #00008099	; 
@@ -1038,6 +1155,11 @@ border-radius: 3px;
     background-color: #000d4a;
     position: relative;
 }
+<<<<<<< HEAD
+=======
+
+/* .head{ height:105px; background: url(../images/head_bg.jpg) no-repeat center center; position: relative} */
+>>>>>>> 49866d0 (Added language switching function)
 .head h1{ color:#fff; text-align: center; font-size:42px; line-height:90px;;}
 .head h1 img{ width:1.5rem; display: inline-block; vertical-align: middle; margin-right: 0}
 .weather{ position:absolute; right:30px; top:0; line-height: 70px;}
@@ -1052,3 +1174,86 @@ border-radius: 3px;
 .popBox .ttBox{height: 30px; line-height: 30px; padding: 14px 30px; border-bottom: solid 1px #eef0f1;text-align: center;-webkit-box-sizing: content-box;  -moz-box-sizing: content-box;box-sizing: content-box;}
 .popBox .ttBox .tt{font-size: 20px; display: inline-block;  height: 30px;}
 .popBox .txtBox{height: calc(100% - 80px);overflow: auto;padding: 10px 0;}
+<<<<<<< HEAD
+=======
+
+/*新增开关灯设计*/
+/* 暗色模式（默认）保持不变，新增以下样式 */
+
+/* 亮色模式 */
+body.light-mode {
+    background-color: #f5f5f5;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* 根据实际页面元素调整这些选择器 */
+.light-mode .boxall {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.light-mode .alltitle,
+.light-mode .numbt,
+.light-mode .numtxt,
+.light-mode .wraptit span,
+.light-mode .wrap li span,
+.light-mode .table1 th,
+.light-mode .table1 td,
+.light-mode .zhibiao span {
+    color: #333 !important;
+}
+
+.light-mode .bar {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.light-mode .bar i {
+    color: #333;
+}
+
+/* 开关按钮样式 */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 60px;
+    height: 30px;
+    background-color: #333;
+    border-radius: 15px;
+    cursor: pointer;
+    z-index: 9999;
+    transition: background-color 0.3s;
+    border: none;
+    /* 确保没有默认边框干扰 */
+}
+
+.toggle-btn::after {
+    content: '';
+    position: absolute;
+    /* 调整位置，留出边框空间 */
+    top: 3px;
+    left: 3px;
+    /* 增大滑块尺寸，包含边框 */
+    width: 22px;
+    height: 22px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+    /* 关键：添加白色边框，实现完整环绕效果 */
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    /* 可选：增加细微阴影增强立体感 */
+}
+
+
+/* 当没有 dark-mode 类时（浅色模式）的按钮样式 */
+body:not(.dark-mode) .toggle-btn {
+    background-color: #0000c4;
+}
+
+body:not(.dark-mode) .toggle-btn::after {
+    transform: translateX(30px);
+    /* 60px宽度 - 20px滑块 - 10px边距 = 30px */
+}
+>>>>>>> 49866d0 (Added language switching function)

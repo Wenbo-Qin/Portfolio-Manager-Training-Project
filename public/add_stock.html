@@ -1,45 +1,60 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="utf-8">
-  <title>股票监控列表管理</title>
+  <title data-i18n="stock-monitor-list">股票监控列表</title>
   <link rel="stylesheet" href="css/comon0.css">
+  <script type="text/javascript" src="js/lang.js"></script>
+
   <style>
+    /* 原有样式保持不变 */
     /* 基础背景与文字 */
-    /*body {*/
-    /*  margin: 0;*/
-    /*  background: #031f2d;*/
-    /*  color: #e0e0e0;*/
-    /*  font-family: "微软雅黑", sans-serif;*/
-    /*}*/
-
-
     /* 顶部标题栏 */
     .header {
-      height: 60px; line-height: 60px;
+      height: 60px;
+      line-height: 60px;
       padding: 0 24px;
       background: #01263b;
       font-size: 20px;
       font-weight: bold;
       color: #ffffff;
     }
+
     /* 主容器，去掉侧边栏，全宽展示 */
     .container {
-      /*padding: 20px;*/
-      padding: 10px 20px 0 20px; /* 与index的.mainbox padding一致 */
+      padding: 10px 20px 0 20px;
+      /* 与index的.mainbox padding一致 */
     }
+
     .main {
       width: 100%;
-      background: transparent; /* 移除背景色，使用全局背景 */
+      background: transparent;
+      /* 移除背景色，使用全局背景 */
     }
-    /* 卡片 Panel */
+
+    /* 卡片 Panel - 增强视觉层次感 */
     .panel {
       background: rgba(0, 0, 0, .2);
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      /* 增强阴影 */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      /* 细微边框 */
+      transition: all 0.3s ease;
+      /* 过渡动画 */
     }
+
+    /* 卡片悬停效果 - 微交互 */
+    .panel:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      transform: translateY(-2px);
+    }
+
     .panel h3 {
       margin: 0 0 12px;
       color: #00f0ff;
@@ -47,93 +62,158 @@
       border-left: 3px solid rgba(255, 255, 255, .1);
       padding-left: 8px;
     }
-    /* 表格样式 */
+
+    /* 表格样式优化 */
     .table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      /* 改为separate实现圆角 */
+      border-spacing: 0;
+      border-radius: 6px;
+      overflow: hidden;
     }
+
     .table th,
     .table td {
-      padding: 8px 12px;
+      padding: 12px 15px;
+      /* 增加内边距 */
       text-align: left;
-      /*border-bottom: 1px solid #0d3347;*/
-      /*color: #e0e0e0;*/
-      border-bottom: 1px solid rgba(255, 255, 255, .1); /* 半透明白色边框 */
-      color: inherit; /* 继承body颜色，支持模式切换 */
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+      /* 半透明白色边框 */
+      color: #ffffff;
+      /* 继承body颜色，支持模式切换 */
+      transition: background 0.2s ease;
+      /* 过渡效果 */
     }
+
     .table th {
-      /*color: #00f0ff;*/
-      color: #49bcf7; /* 与index表格标题色一致 */
+      color: #49bcf7;
+      /* 与index表格标题色一致 */
+      background: rgba(0, 0, 0, 0.15);
+      /* 表头背景 */
+      font-weight: 500;
     }
-    /* 搜索输入区 */
+
+    /* 表格行悬停效果 */
+    .table tr:hover td {
+      background: rgba(73, 188, 247, 0.05);
+    }
+
+    /* 搜索输入区优化 */
     .input-group {
       display: flex;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      /* 增加间距 */
+      position: relative;
     }
-    /*.input-group input {*/
-    /*  flex: 1;*/
-    /*  padding: 6px 12px;*/
-    /*  border: none;*/
-    /*  border-radius: 4px 0 0 4px;*/
-    /*  background: #03344e;*/
-    /*  color: #fff;*/
-    /*  font-size: 14px;*/
-    /*}*/
-    /* 输入框样式适配 */
+
     .input-group input {
       flex: 1;
-      padding: 6px 12px;
-      border: none;
+      padding: 8px 15px;
+      /* 调整内边距 */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      /* 边框优化 */
       border-radius: 4px 0 0 4px;
-      background: rgba(255, 255, 255, .1); /* 半透明背景 */
-      color: inherit; /* 继承文字颜色 */
+      background: rgba(255, 255, 255, .1);
+      /* 半透明背景 */
+      color: #ffffff;
+      /* 继承文字颜色 */
       font-size: 14px;
+      transition: all 0.3s ease;
+      /* 过渡动画 */
+    }
+
+    /* 输入框焦点效果 */
+    .input-group input:focus {
+      outline: none;
+      border-color: rgba(73, 188, 247, 0.5);
+      box-shadow: 0 0 0 2px rgba(73, 188, 247, 0.1);
     }
 
     .input-group button {
-      padding: 6px 16px;
+      padding: 8px 18px;
+      /* 调整按钮大小 */
       border: none;
       border-radius: 0 4px 4px 0;
       background: #0674b4;
       color: #fff;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.3s ease;
+      /* 过渡动画 */
     }
-    /* 建议列表 */
+
+    /* 按钮悬停和点击效果 */
+    .input-group button:hover {
+      background: #0887d0;
+      transform: translateY(-1px);
+    }
+
+    .input-group button:active {
+      transform: translateY(1px);
+    }
+
+    /* 建议列表优化 */
     #suggestions {
-      background: #021c2c;
-      border: 1px solid #0d3347;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 4px;
       max-height: 180px;
       overflow-y: auto;
       margin-top: 4px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      /* 增加阴影 */
     }
+
     #suggestions div {
-      padding: 8px 12px;
-      border-bottom: 1px solid #0d3347;
+      padding: 10px 15px;
+      /* 调整内边距 */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       cursor: pointer;
       color: #f0f0f0;
       font-size: 14px;
+      transition: all 0.2s ease;
+      /* 过渡动画 */
     }
+
+    /* 建议项悬停效果 */
     #suggestions div:hover {
-      background: #034a66;
+      background: rgba(73, 188, 247, 0.1);
+      padding-left: 18px;
+      /* 悬停时缩进效果 */
     }
-    /* 添加表单 & 提示 */
+
+    /* 添加表单 & 提示优化 */
     #add-form {
       margin-top: 12px;
       display: flex;
       align-items: center;
     }
+
     #add-form button {
       margin-left: 16px;
-      padding: 6px 16px;
+      padding: 8px 18px;
+      /* 调整按钮大小 */
       border: none;
       border-radius: 4px;
-      background: #08c;
+      background: #0674b4;
       color: #fff;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.3s ease;
+      /* 过渡动画 */
     }
+
+    /* 添加按钮交互效果 */
+    #add-form button:hover {
+      background: #0887d0;
+      transform: translateY(-1px);
+    }
+
+    #add-form button:active {
+      transform: translateY(1px);
+    }
+
     #chosen-label {
       color: #a0ffa0;
       font-size: 14px;
@@ -142,508 +222,350 @@
       margin-top: 12px;
       font-size: 14px;
       color: #ff6666;
+      transition: opacity 0.3s ease;
+      /* 消息淡入淡出 */
+    }
+
+    /* 滚动条美化 */
+    #suggestions::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    #suggestions::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    #suggestions::-webkit-scrollbar-thumb {
+      background: rgba(73, 188, 247, 0.5);
+      border-radius: 3px;
+    }
+
+    #suggestions::-webkit-scrollbar-thumb:hover {
+      background: rgba(73, 188, 247, 0.7);
+    }
+
+    /* 开关按钮动画优化 */
+    .toggle-btn {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toggle-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* 调整后的动画人物样式 - 缩小并移至右上角时钟下方 */
+    .animation-character {
+      position: absolute;
+      top: 80px;
+      /* 时钟下方 */
+      right: 20px;
+      /* 右侧位置 */
+      width: 80px;
+      /* 缩小尺寸 */
+      height: 80px;
+      /* 缩小尺寸 */
+      background-color: rgba(73, 188, 247, 0.15);
+      border-radius: 50%;
+      /* 新增加亮外轮廓线 */
+      /*border: 2px solid rgba(255, 255, 255, 0.1);*/
+      box-shadow: 0 0 10px #49bcf7, 0 4px 15px rgba(73, 188, 247, 0.3);
+      /* 增强发光效果 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      /* 改为白色字体 */
+      font-size: 14px;
+      /* 缩小字体 */
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(73, 188, 247, 0.3);
+      transition: all 0.5s ease;
+      z-index: 100;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* 悬浮动画保持不变 */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    /* 调整后的提示框样式 - 字体改为白色 */
+    .market-tooltip {
+      position: absolute;
+      top: 170px;
+      /* 动画人物下方 */
+      right: 20px;
+      /* 与动画人物对齐 */
+      width: 220px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+      border: 1px solid rgba(73, 188, 247, 0.3);
+      color: #ffffff !important;
+      /* 改为白色字体 */
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .market-tooltip.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .market-tooltip h4 {
+      margin: 0 0 10px;
+      color: #ffffff;
+      /* 改为白色字体 */
+      font-size: 16px;
+    }
+
+    .market-tooltip p {
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .market-tooltip span.code {
+      display: inline-block;
+      width: 30px;
+      height: 24px;
+      background-color: rgba(73, 188, 247, 0.2);
+      border-radius: 4px;
+      text-align: center;
+      line-height: 24px;
+      margin-right: 10px;
+      color: #ffffff;
+      /* 改为白色字体 */
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
-<!--  &lt;!&ndash; 顶部 &ndash;&gt;-->
-<!--  <div class="header">资产管理平台 · 监控管理</div>-->
-<!-- 新增开关功能（与index一致） -->
-<button id="bgToggle" class="toggle-btn"></button>
+  <!-- 新增开关功能（与index一致） -->
+  <button id="bgToggle" class="toggle-btn"></button>
+  <!-- 新增语言切换按钮（放在bgToggle后面） -->
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="zh">中文</button>
+    <button class="lang-btn" data-lang="en">English</button>
+  </div>
+  <!-- 页面头部区域（与index一致） -->
+  <div class="head">
+    <div class="weather"><span id="showTime"></span></div> <!-- 显示时间的容器 -->
+    <h1 data-i18n="stock-monitor-list"><a style="color: white">股票监控列表</a></h1>
+  </div>
 
-<!-- 页面头部区域（与index一致） -->
-<div class="head">
-  <div class="weather"><span id="showTime"></span></div> <!-- 显示时间的容器 -->
-  <h1><a style="color: white">投资项目管理系统</a></h1>
-</div>
+  <!-- 时间显示脚本（从index复制） -->
+  <script>
+    var t = null;
+    t = setTimeout(time, 1000);//開始运行
+    function time() {
+      clearTimeout(t);//清除定时器
+      dt = new Date();
+      var y = dt.getFullYear();
+      var mt = dt.getMonth() + 1;
+      var day = dt.getDate();
+      var h = dt.getHours();//获取时
+      var m = dt.getMinutes();//获取分
+      var s = dt.getSeconds();//获取秒
+      document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+      t = setTimeout(time, 1000); //设定定时器，循环运行
+    }
+  </script>
 
-<!-- 时间显示脚本（从index复制） -->
-<script>
-  var t = null;
-  t = setTimeout(time, 1000);//開始运行
-  function time() {
-    clearTimeout(t);//清除定时器
-    dt = new Date();
-    var y = dt.getFullYear();
-    var mt = dt.getMonth() + 1;
-    var day = dt.getDate();
-    var h = dt.getHours();//获取时
-    var m = dt.getMinutes();//获取分
-    var s = dt.getSeconds();//获取秒
-    document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
-    t = setTimeout(time, 1000); //设定定时器，循环运行
-  }
-</script>
-
-<!-- 主容器 -->
-<div class="container">
-  <div class="main">
-    <!-- 当前监控列表 -->
-    <div class="panel">
-      <h3>当前监控</h3>
-      <table class="table">
-        <thead>
-        <tr><th>代码</th><th>市场</th></tr>
-        </thead>
-        <tbody id="list-body"></tbody>
-      </table>
-    </div>
-
-    <!-- 搜索并添加 -->
-    <div class="panel">
-      <h3>按名称搜索并添加监控</h3>
-
-      <!-- 搜索框 -->
-      <div class="input-group">
-        <input type="text" id="search-input" placeholder="输入中文/英文或代码">
-        <button id="search-btn">搜索</button>
+  <!-- 主容器 -->
+  <div class="container">
+    <div class="main">
+      <!-- 当前监控列表 -->
+      <div class="panel">
+        <h3 data-i18n="current-monitor">当前监控</h3>
+        <table class="table">
+          <thead>
+            <th data-i18n="code">代码</th>
+            <th data-i18n="market">市场</th>
+          </thead>
+          <tbody id="list-body"></tbody>
+        </table>
       </div>
-      <div id="suggestions"></div>
 
-      <!-- 添加确认 -->
-      <form id="add-form">
-        <input type="hidden" id="chosen-symbol" name="symbol">
-        <input type="hidden" id="chosen-market" name="market">
-        <!-- 以下两行由脚本首次点击时动态插入：
+      <!-- 搜索并添加 -->
+      <div class="panel">
+        <h3 data-i18n="search-add">按名称搜索并添加监控</h3>
+
+        <!-- 搜索框 -->
+        <div class="input-group">
+          <input type="text" id="search-input" placeholder="输入中文/英文或代码">
+          <button id="search-btn">搜索</button>
+        </div>
+        <div id="suggestions"></div>
+
+        <!-- 添加确认 -->
+        <form id="add-form">
+          <input type="hidden" id="chosen-symbol" name="symbol">
+          <input type="hidden" id="chosen-market" name="market">
+          <!-- 以下两行由脚本首次点击时动态插入：
         <input type="hidden" id="chosen-nameZh" name="nameZh">
         <input type="hidden" id="chosen-nameEn" name="nameEn">
         -->
-        <span id="chosen-label"></span>
-        <button type="submit">添加到监控</button>
-      </form>
+          <span id="chosen-label"></span>
+          <button type="submit" data-i18n="add-to-monitor">添加到监控</button>
+        </form>
 
-      <div id="msg"></div>
+        <div id="msg"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="js/jquery.js"></script>
-<script>
-  function loadList() {
-    $.get('/api/monitored', res => {
-      if (!res.success) {
-        $('#msg').css('color','red').text('加载失败');
-        return;
-      }
-      const rows = res.data.map(r =>
-              `<tr><td>${r.symbol}</td><td>${r.market}</td></tr>`
-      ).join('');
-      $('#list-body').html(rows);
-    });
-  }
+  <!-- 调整后的动画人物和提示框 -->
+  <div class="animation-character">
+    市场<br>说明
+  </div>
+  <div class="market-tooltip">
+    <h4>市场代码说明:</h4>
+    <p style="color: white;"><span class="code">HK:</span>代表该股票在香港联合交易所上市（港股）</p>
+    <p style="color: white;"><span class="code">SH:</span>代表该股票在上海证券交易所上市（A股）</p>
+  </div>
 
-  $(function(){
-    loadList();
-
-    // 1. 搜索
-    $('#search-btn').click(function(){
-      const kw = $('#search-input').val().trim();
-      if (!kw) return;
-      $('#suggestions').html('搜索中…');
-      $.get('/api/search', { q: kw }, res => {
+  <script src="js/jquery.js"></script>
+  <script>
+    function loadList() {
+      $.get('/api/monitored', res => {
         if (!res.success) {
-          return $('#suggestions').html('搜索失败');
+          $('#msg').css('color', 'red').text('加载失败');
+          return;
         }
-        if (!res.data.length) {
-          return $('#suggestions').html('无匹配项');
-        }
-        const html = res.data.map(item =>
-                `<div
+        const rows = res.data.map(r =>
+          `<tr><td>${r.symbol}</td><td>${r.market}</td></tr>`
+        ).join('');
+        $('#list-body').html(rows);
+      });
+    }
+
+    $(function () {
+      loadList();
+
+      // 1. 搜索
+      $('#search-btn').click(function () {
+        const kw = $('#search-input').val().trim();
+        if (!kw) return;
+        $('#suggestions').html('搜索中…');
+        $.get('/api/search', { q: kw }, res => {
+          if (!res.success) {
+            return $('#suggestions').html('搜索失败');
+          }
+          if (!res.data.length) {
+            return $('#suggestions').html('无匹配项');
+          }
+          const html = res.data.map(item =>
+            `<div
                data-symbol="${item.symbol}"
                data-market="${item.market}"
                data-nameZh="${item.nameZh}"
                data-nameEn="${item.nameEn}">
               ${item.nameZh} / ${item.nameEn} [${item.symbol}]
             </div>`
-        ).join('');
-        $('#suggestions').html(html);
+          ).join('');
+          $('#suggestions').html(html);
+        });
       });
-    });
 
-    // 2. 选中
-    $('#suggestions').on('click', 'div', function(){
-      const symbol = $(this).data('symbol');
-      const market = $(this).data('market');
-      const nameZh = $(this).data('namezh');
-      const nameEn = $(this).data('nameen');
+      // 2. 选中
+      $('#suggestions').on('click', 'div', function () {
+        const symbol = $(this).data('symbol');
+        const market = $(this).data('market');
+        const nameZh = $(this).data('namezh');
+        const nameEn = $(this).data('nameen');
 
-      $('#chosen-symbol').val(symbol);
-      $('#chosen-market').val(market);
-      $('#chosen-label').text(`将添加：${nameZh} / ${nameEn}`);
+        $('#chosen-symbol').val(symbol);
+        $('#chosen-market').val(market);
+        $('#chosen-label').text(`将添加：${nameZh} / ${nameEn}`);
 
-      if (!$('#chosen-nameZh').length) {
-        $('#add-form').prepend('<input type="hidden" id="chosen-nameZh" name="nameZh">');
-        $('#add-form').prepend('<input type="hidden" id="chosen-nameEn" name="nameEn">');
-      }
-      $('#chosen-nameZh').val(nameZh);
-      $('#chosen-nameEn').val(nameEn);
+        if (!$('#chosen-nameZh').length) {
+          $('#add-form').prepend('<input type="hidden" id="chosen-nameZh" name="nameZh">');
+          $('#add-form').prepend('<input type="hidden" id="chosen-nameEn" name="nameEn">');
+        }
+        $('#chosen-nameZh').val(nameZh);
+        $('#chosen-nameEn').val(nameEn);
 
-      $('#add-form').show();
-    });
+        $('#add-form').show();
+      });
 
-    // 3. 提交
-    $('#add-form').on('submit', function(e){
-      e.preventDefault();
-      const data = {
-        symbol: $('#chosen-symbol').val(),
-        market: $('#chosen-market').val(),
-        nameZh: $('#chosen-nameZh').val(),
-        nameEn: $('#chosen-nameEn').val()
-      };
-      $.ajax({
-        url: '/api/monitored',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success(res) {
-          if (res.success) {
-            $('#msg').css('color','green').text('添加成功');
-            loadList();
-            $('#add-form').hide();
-            $('#suggestions').empty();
-            $('#search-input').val('');
-          } else {
-            $('#msg').css('color','red').text(res.error);
+      // 3. 提交
+      $('#add-form').on('submit', function (e) {
+        e.preventDefault();
+        const data = {
+          symbol: $('#chosen-symbol').val(),
+          market: $('#chosen-market').val(),
+          nameZh: $('#chosen-nameZh').val(),
+          nameEn: $('#chosen-nameEn').val()
+        };
+        $.ajax({
+          url: '/api/monitored',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success(res) {
+            if (res.success) {
+              $('#msg').css('color', 'green').text('添加成功');
+              loadList();
+              $('#add-form').hide();
+              $('#suggestions').empty();
+              $('#search-input').val('');
+            } else {
+              $('#msg').css('color', 'red').text(res.error);
+            }
+          },
+          error() {
+            $('#msg').css('color', 'red').text('网络错误');
           }
-        },
-        error() {
-          $('#msg').css('color','red').text('网络错误');
+        });
+      });
+
+      // 动画人物交互保持不变
+      $('.animation-character').click(function () {
+        $('.market-tooltip').toggleClass('show');
+      });
+
+      // 点击其他区域关闭提示框
+      $(document).click(function (e) {
+        if (!$(e.target).closest('.animation-character, .market-tooltip').length) {
+          $('.market-tooltip').removeClass('show');
         }
       });
     });
-  });
-</script>
+  </script>
 
 
-<script>
-  // 页面加载时检查状态
-  if (localStorage.getItem('useDarkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-  }
+  <script>
+    // 页面加载时检查状态
+    if (localStorage.getItem('useDarkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
 
-  // 点击切换
-  document.getElementById('bgToggle').addEventListener('click', function () {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));
-  });
-</script>
+    // 点击切换
+    document.getElementById('bgToggle').addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));
+    });
+  </script>
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="zh-CN">-->
-<!--<head>-->
-<!--  <meta charset="utf-8">-->
-<!--  <title>股票监控列表管理</title>-->
-<!--  <link rel="stylesheet" href="css/comon0.css">-->
-<!--  <style>-->
-<!--    /* 基础背景与文字 */-->
-<!--    body {-->
-<!--      margin: 0;-->
-<!--      background: #031f2d;-->
-<!--      color: #e0e0e0;-->
-<!--      font-family: "微软雅黑", sans-serif;-->
-<!--    }-->
-<!--    /* 顶部标题栏 */-->
-<!--    .header {-->
-<!--      height: 60px; line-height: 60px;-->
-<!--      padding: 0 24px;-->
-<!--      background: #01263b;-->
-<!--      font-size: 20px;-->
-<!--      font-weight: bold;-->
-<!--      color: #ffffff;-->
-<!--    }-->
-<!--    /* 主容器，去掉侧边栏，全宽展示 */-->
-<!--    .container {-->
-<!--      padding: 20px;-->
-<!--    }-->
-<!--    .main {-->
-<!--      width: 100%;-->
-<!--    }-->
-<!--    /* 卡片 Panel */-->
-<!--    .panel {-->
-<!--      background: #021c2c;-->
-<!--      border-radius: 8px;-->
-<!--      padding: 20px;-->
-<!--      margin-bottom: 20px;-->
-<!--      box-shadow: 0 2px 8px rgba(0,0,0,0.5);-->
-<!--    }-->
-<!--    .panel h3 {-->
-<!--      margin: 0 0 12px;-->
-<!--      color: #00f0ff;-->
-<!--      font-size: 16px;-->
-<!--      border-left: 3px solid #00f0ff;-->
-<!--      padding-left: 8px;-->
-<!--    }-->
-<!--    /* 表格样式 */-->
-<!--    .table {-->
-<!--      width: 100%;-->
-<!--      border-collapse: collapse;-->
-<!--    }-->
-<!--    .table th,-->
-<!--    .table td {-->
-<!--      padding: 8px 12px;-->
-<!--      text-align: left;-->
-<!--      border-bottom: 1px solid #0d3347;-->
-<!--      color: #e0e0e0;-->
-<!--    }-->
-<!--    .table th {-->
-<!--      color: #00f0ff;-->
-<!--    }-->
-<!--    /* 搜索输入区 */-->
-<!--    .input-group {-->
-<!--      display: flex;-->
-<!--      margin-bottom: 8px;-->
-<!--    }-->
-<!--    .input-group input {-->
-<!--      flex: 1;-->
-<!--      padding: 6px 12px;-->
-<!--      border: none;-->
-<!--      border-radius: 4px 0 0 4px;-->
-<!--      background: #03344e;-->
-<!--      color: #fff;-->
-<!--      font-size: 14px;-->
-<!--    }-->
-<!--    .input-group button {-->
-<!--      padding: 6px 16px;-->
-<!--      border: none;-->
-<!--      border-radius: 0 4px 4px 0;-->
-<!--      background: #0674b4;-->
-<!--      color: #fff;-->
-<!--      cursor: pointer;-->
-<!--      font-size: 14px;-->
-<!--    }-->
-<!--    /* 建议列表 */-->
-<!--    #suggestions {-->
-<!--      background: #021c2c;-->
-<!--      border: 1px solid #0d3347;-->
-<!--      border-radius: 4px;-->
-<!--      max-height: 180px;-->
-<!--      overflow-y: auto;-->
-<!--      margin-top: 4px;-->
-<!--    }-->
-<!--    #suggestions div {-->
-<!--      padding: 8px 12px;-->
-<!--      border-bottom: 1px solid #0d3347;-->
-<!--      cursor: pointer;-->
-<!--      color: #f0f0f0;-->
-<!--      font-size: 14px;-->
-<!--    }-->
-<!--    #suggestions div:hover {-->
-<!--      background: #034a66;-->
-<!--    }-->
-<!--    /* 添加表单 & 提示 */-->
-<!--    #add-form {-->
-<!--      margin-top: 12px;-->
-<!--      display: flex;-->
-<!--      align-items: center;-->
-<!--    }-->
-<!--    #add-form button {-->
-<!--      margin-left: 16px;-->
-<!--      padding: 6px 16px;-->
-<!--      border: none;-->
-<!--      border-radius: 4px;-->
-<!--      background: #08c;-->
-<!--      color: #fff;-->
-<!--      cursor: pointer;-->
-<!--      font-size: 14px;-->
-<!--    }-->
-<!--    #chosen-label {-->
-<!--      color: #a0ffa0;-->
-<!--      font-size: 14px;-->
-<!--    }-->
-<!--    #msg {-->
-<!--      margin-top: 12px;-->
-<!--      font-size: 14px;-->
-<!--      color: #ff6666;-->
-<!--    }-->
-<!--  </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--  &lt;!&ndash; 顶部 &ndash;&gt;-->
-<!--  <div class="header">资产管理平台 · 监控管理</div>-->
-
-<!--  &lt;!&ndash; 主容器 &ndash;&gt;-->
-<!--  <div class="container">-->
-<!--    <div class="main">-->
-<!--      &lt;!&ndash; 当前监控列表 &ndash;&gt;-->
-<!--      <div class="panel">-->
-<!--        <h3>当前监控</h3>-->
-<!--        <table class="table">-->
-<!--          <thead>-->
-<!--            <tr><th>代码</th><th>市场</th></tr>-->
-<!--          </thead>-->
-<!--          <tbody id="list-body"></tbody>-->
-<!--        </table>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; 搜索并添加 &ndash;&gt;-->
-<!--      <div class="panel">-->
-<!--        <h3>按名称搜索并添加监控</h3>-->
-
-<!--        &lt;!&ndash; 搜索框 &ndash;&gt;-->
-<!--        <div class="input-group">-->
-<!--          <input type="text" id="search-input" placeholder="输入中文/英文或代码">-->
-<!--          <button id="search-btn">搜索</button>-->
-<!--        </div>-->
-<!--        <div id="suggestions"></div>-->
-
-<!--        &lt;!&ndash; 添加确认 &ndash;&gt;-->
-<!--        <form id="add-form">-->
-<!--          <input type="hidden" id="chosen-symbol" name="symbol">-->
-<!--          <input type="hidden" id="chosen-market" name="market">-->
-<!--          &lt;!&ndash; 以下两行由脚本首次点击时动态插入：-->
-<!--          <input type="hidden" id="chosen-nameZh" name="nameZh">-->
-<!--          <input type="hidden" id="chosen-nameEn" name="nameEn">-->
-<!--          &ndash;&gt;-->
-<!--          <span id="chosen-label"></span>-->
-<!--          <button type="submit">添加到监控</button>-->
-<!--        </form>-->
-
-<!--        <div id="msg"></div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <script src="js/jquery.js"></script>-->
-<!--  <script>-->
-<!--    function loadList() {-->
-<!--      $.get('/api/monitored', res => {-->
-<!--        if (!res.success) {-->
-<!--          $('#msg').css('color','red').text('加载失败');-->
-<!--          return;-->
-<!--        }-->
-<!--        const rows = res.data.map(r =>-->
-<!--          `<tr><td>${r.symbol}</td><td>${r.market}</td></tr>`-->
-<!--        ).join('');-->
-<!--        $('#list-body').html(rows);-->
-<!--      });-->
-<!--    }-->
-
-<!--    $(function(){-->
-<!--      loadList();-->
-
-<!--      // 1. 搜索-->
-<!--      $('#search-btn').click(function(){-->
-<!--        const kw = $('#search-input').val().trim();-->
-<!--        if (!kw) return;-->
-<!--        $('#suggestions').html('搜索中…');-->
-<!--        $.get('/api/search', { q: kw }, res => {-->
-<!--          if (!res.success) {-->
-<!--            return $('#suggestions').html('搜索失败');-->
-<!--          }-->
-<!--          if (!res.data.length) {-->
-<!--            return $('#suggestions').html('无匹配项');-->
-<!--          }-->
-<!--          const html = res.data.map(item =>-->
-<!--            `<div-->
-<!--               data-symbol="${item.symbol}"-->
-<!--               data-market="${item.market}"-->
-<!--               data-nameZh="${item.nameZh}"-->
-<!--               data-nameEn="${item.nameEn}">-->
-<!--              ${item.nameZh} / ${item.nameEn} [${item.symbol}]-->
-<!--            </div>`-->
-<!--          ).join('');-->
-<!--          $('#suggestions').html(html);-->
-<!--        });-->
-<!--      });-->
-
-<!--      // 2. 选中-->
-<!--      $('#suggestions').on('click', 'div', function(){-->
-<!--        const symbol = $(this).data('symbol');-->
-<!--        const market = $(this).data('market');-->
-<!--        const nameZh = $(this).data('namezh');-->
-<!--        const nameEn = $(this).data('nameen');-->
-
-<!--        $('#chosen-symbol').val(symbol);-->
-<!--        $('#chosen-market').val(market);-->
-<!--        $('#chosen-label').text(`将添加：${nameZh} / ${nameEn}`);-->
-
-<!--        if (!$('#chosen-nameZh').length) {-->
-<!--          $('#add-form').prepend('<input type="hidden" id="chosen-nameZh" name="nameZh">');-->
-<!--          $('#add-form').prepend('<input type="hidden" id="chosen-nameEn" name="nameEn">');-->
-<!--        }-->
-<!--        $('#chosen-nameZh').val(nameZh);-->
-<!--        $('#chosen-nameEn').val(nameEn);-->
-
-<!--        $('#add-form').show();-->
-<!--      });-->
-
-<!--      // 3. 提交-->
-<!--      $('#add-form').on('submit', function(e){-->
-<!--        e.preventDefault();-->
-<!--        const data = {-->
-<!--          symbol: $('#chosen-symbol').val(),-->
-<!--          market: $('#chosen-market').val(),-->
-<!--          nameZh: $('#chosen-nameZh').val(),-->
-<!--          nameEn: $('#chosen-nameEn').val()-->
-<!--        };-->
-<!--        $.ajax({-->
-<!--          url: '/api/monitored',-->
-<!--          method: 'POST',-->
-<!--          contentType: 'application/json',-->
-<!--          data: JSON.stringify(data),-->
-<!--          success(res) {-->
-<!--            if (res.success) {-->
-<!--              $('#msg').css('color','green').text('添加成功');-->
-<!--              loadList();-->
-<!--              $('#add-form').hide();-->
-<!--              $('#suggestions').empty();-->
-<!--              $('#search-input').val('');-->
-<!--            } else {-->
-<!--              $('#msg').css('color','red').text(res.error);-->
-<!--            }-->
-<!--          },-->
-<!--          error() {-->
-<!--            $('#msg').css('color','red').text('网络错误');-->
-<!--          }-->
-<!--        });-->
-<!--      });-->
-<!--    });-->
-<!--  </script>-->
-<!--</body>-->
-<!--</html>-->

@@ -43,7 +43,11 @@ function loadFundData() {
   // ——— 初始化：页面加载、定时、双击刷新 ———
   function initFundModule() {
     loadFundData();
+<<<<<<< HEAD
     setInterval(loadFundData, 60*1000);
+=======
+    setInterval(loadFundData, 60*60*1000);
+>>>>>>> 49866d0 (Added language switching function)
     $('.fund-header').on('dblclick', loadFundData);
   }
 

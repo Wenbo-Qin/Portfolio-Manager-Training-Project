@@ -47,11 +47,26 @@ $(function () {
                     itemHeight: 10,
                     itemGap: 10,
                     textStyle: {
+<<<<<<< HEAD
                         color: 'rgba(255,255,255,.6)',
                         fontSize: 12
                     },
                     orient: 'vertical',
                     data: ['股票', '基金', '黄金', '债券', '流动资金'] // 恢复图例数据
+=======
+                        color: 'rgba(255,255,255,.9)',
+                        fontSize: 14
+                    },
+                    orient: 'vertical',
+                    data: ['股票', '基金', '黄金', '债券', '流动资金'] // 恢复图例数据
+                    // data: [
+                    //     i18n[lang]["stock"],
+                    //     i18n[lang]["fund"],
+                    //     i18n[lang]["gold"],
+                    //     i18n[lang]["bond"],
+                    //     i18n[lang]["liquid-funds"]
+                    // ]
+>>>>>>> 49866d0 (Added language switching function)
 
                 },
                 calculable: true,
@@ -175,7 +190,12 @@ $(function () {
                     // right: '35%',
                     top: '0',
                     textStyle: {
+<<<<<<< HEAD
                         color: "#fff"
+=======
+                        color: "#fff",
+                        fontSize: 15    //新设置的字体
+>>>>>>> 49866d0 (Added language switching function)
                     },
                     // itemWidth: 15,
                     // itemHeight: 15,
@@ -194,7 +214,12 @@ $(function () {
                     axisLabel: {
                         show: true,
                         textStyle: {
+<<<<<<< HEAD
                             color: 'rgba(255,255,255,.6)'
+=======
+                            color: 'rgba(255,255,255,.6)',
+                            fontSize: 14
+>>>>>>> 49866d0 (Added language switching function)
                         }
                     },
                     axisLine: {
@@ -222,7 +247,11 @@ $(function () {
                         }
                     },
                     // 新增：固定 Y 轴最大值为 200
+<<<<<<< HEAD
                         max: 180
+=======
+                    max: 180
+>>>>>>> 49866d0 (Added language switching function)
                 }],
                 series: [{
                     name: '股票',
@@ -366,12 +395,62 @@ $(function () {
         renderChart();
 
         //接口请求获取数据
+<<<<<<< HEAD
+=======
+        // $.get('/api/asset-monthly-details', function (res) {  // 此处修改为正确的接口地址
+        //     if (!res || !res.success || !res.data || res.data.length !== 12) {
+        //         console.error('数据格式错误或接口失败：', res?.error || '未知错误');
+        //         return;
+        //     }
+
+        //     // 解析股票数据
+        //     var newStock = [];
+        //     for (var i = 0; i < res.data.length; i++) {
+        //         var item = res.data[i];
+        //         var val = item.stock || 0;
+        //         newStock.push(Math.round(Number(val)));
+        //     }
+
+        //     // 解析基金数据
+        //     var newFund = [];
+        //     for (var i = 0; i < res.data.length; i++) {
+        //         var item = res.data[i];
+        //         var val = item.fund || 0;
+        //         newFund.push(Math.round(Number(val)));
+        //     }
+
+        //     // 解析黄金数据（注意：此处字段名应为 item.gold，之前代码写错了）
+        //     var newGold = [];
+        //     for (var i = 0; i < res.data.length; i++) {
+        //         var item = res.data[i];
+        //         var val = item.gold || 0;  // 修正：从 item.gold 获取黄金数据
+        //         newGold.push(Math.round(Number(val)));
+        //     }
+
+        //     // 解析债券数据（注意：此处字段名应为 item.bond，之前代码写错了）
+        //     var newBond = [];
+        //     for (var i = 0; i < res.data.length; i++) {
+        //         var item = res.data[i];
+        //         var val = item.bond || 0;  // 修正：从 item.bond 获取债券数据
+        //         newBond.push(Math.round(Number(val)));
+        //     }
+
+        //     // 更新数据并重新渲染
+        //     stockData = newStock;
+        //     fundData = newFund;
+        //     goldData = newGold;
+        //     bondData = newBond;
+        //     renderChart();
+        // });
+
+>>>>>>> 49866d0 (Added language switching function)
         $.get('/api/asset-monthly-details', function (res) {  // 此处修改为正确的接口地址
             if (!res || !res.success || !res.data || res.data.length !== 12) {
                 console.error('数据格式错误或接口失败：', res?.error || '未知错误');
                 return;
             }
 
+<<<<<<< HEAD
             // 解析股票数据
             var newStock = [];
             for (var i = 0; i < res.data.length; i++) {
@@ -402,6 +481,26 @@ $(function () {
                 var item = res.data[i];
                 var val = item.bond || 0;  // 修正：从 item.bond 获取债券数据
                 newBond.push(Math.round(Number(val)));
+=======
+            // 创建12个月的默认数组
+            var newStock = Array(12).fill(10);
+            var newFund = Array(12).fill(10);
+            var newGold = Array(12).fill(10);
+            var newBond = Array(12).fill(10);
+
+            // 根据实际月份映射数据
+            for (var i = 0; i < res.data.length; i++) {
+                var item = res.data[i];
+                // 从 'YYYY-MM' 格式中提取月份索引 (0-11)
+                var monthIndex = parseInt(item.month.split('-')[1]) - 1;
+
+                if (monthIndex >= 0 && monthIndex < 12) {
+                    newStock[monthIndex] = Math.round(Number(item.stock) || 0);
+                    newFund[monthIndex] = Math.round(Number(item.fund) || 0);
+                    newGold[monthIndex] = Math.round(Number(item.gold) || 0);
+                    newBond[monthIndex] = Math.round(Number(item.bond) || 0);
+                }
+>>>>>>> 49866d0 (Added language switching function)
             }
 
             // 更新数据并重新渲染
@@ -451,7 +550,12 @@ $(function () {
                     ],
                     "top": "0%",
                     "textStyle": {
+<<<<<<< HEAD
                         "color": "rgba(255,255,255,0.9)"//图例文字
+=======
+                        "color": "rgba(255,255,255,0.9)",  //图例文字
+                        "fontSize": 15 // 新设置的字体
+>>>>>>> 49866d0 (Added language switching function)
                     }
                 },
 
@@ -490,7 +594,11 @@ $(function () {
 
                         },
                         axisLine: { lineStyle: { color: 'rgba(255,255,255,.4)' } },//右线色
+<<<<<<< HEAD
                         splitLine: { show: true, lineStyle: { color: "#001e94" } },//x轴线
+=======
+                        splitLine: { show: false, lineStyle: { color: '#878787' } },//x轴线
+>>>>>>> 49866d0 (Added language switching function)
                     },
                 ],
                 "grid": {
@@ -646,7 +754,11 @@ $(function () {
         }).fail(function () {
             document.getElementById('totalAsset').textContent = '网络错误';
         });
+<<<<<<< HEAD
         setInterval(loadTotalAsset, 30000);
+=======
+        setInterval(loadTotalAsset, 60 * 60 * 1000);
+>>>>>>> 49866d0 (Added language switching function)
     }
 
     //股票投资扇形图
@@ -961,11 +1073,15 @@ $(function () {
         });
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 49866d0 (Added language switching function)
 
     // ========== 港股/A股 看板 动态渲染 ==========
 
     // 封装渲染函数：market = 'hk' 或 'sh'
     function loadStockBoards() {
+<<<<<<< HEAD
       //   function render(market, selector) {
       //       $.get(`/api/${market}/top?limit=5`, function (res) {
       //           if (!res.success) {
@@ -985,6 +1101,9 @@ $(function () {
       //   }
 
 // ------------------新增---------------
+=======
+        // ------------------新增---------------
+>>>>>>> 49866d0 (Added language switching function)
         function render(market, selector) {
             $.get(`/api/${market}/top?limit=5`, function (res) {
                 if (!res.success) {
@@ -1005,6 +1124,7 @@ $(function () {
                 setGrowthColor(market, selector);
             });
         }
+<<<<<<< HEAD
 
 // 新增颜色设置函数（放在 render 函数后面）
 //         function setGrowthColor(market, selector) {
@@ -1030,6 +1150,10 @@ $(function () {
 //         }
         function setGrowthColor(market, selector) {
             $(selector).find('tr').each(function() {
+=======
+        function setGrowthColor(market, selector) {
+            $(selector).find('tr').each(function () {
+>>>>>>> 49866d0 (Added language switching function)
                 const $row = $(this); // 获取当前行
                 const growthCell = $row.find('td:last-child'); // 找到增长率单元格
                 if (growthCell.length === 0) return; // 跳过无数据行
@@ -1049,10 +1173,13 @@ $(function () {
                 }
             });
         }
+<<<<<<< HEAD
 
         // ------------------新增---------------
 
 
+=======
+>>>>>>> 49866d0 (Added language switching function)
         render('hk', '#hk-tbody');
         render('sh', '#sh-tbody');
     }
@@ -1061,13 +1188,18 @@ $(function () {
     $(function () {
         loadStockBoards();
         // 每 5 分钟刷新一次
+<<<<<<< HEAD
         setInterval(loadStockBoards, 5 * 60 * 1000);
+=======
+        setInterval(loadStockBoards, 60 * 60 * 1000);
+>>>>>>> 49866d0 (Added language switching function)
     });
 });
 
 
 
 
+<<<<<<< HEAD
 =======
 });
 
@@ -1173,4 +1305,6 @@ $(function () {
 //     }
 // });
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
 

@@ -3,6 +3,7 @@ const path = require('path');
 const pool = require('./db/mysql');
 const cors = require('cors'); // 如果你用了 cors
 <<<<<<< HEAD
+<<<<<<< HEAD
 const { syncMarketData } = require('./services/fetchStockData');
 const cron   = require('node-cron');
 const yahooFinance = require('yahoo-finance2').default;
@@ -15,6 +16,15 @@ const axios = require('axios');
 // 2. 初始化 app（这一步必须在使用 app 之前）
 const app = express();
 >>>>>>> master
+=======
+const { syncMarketData } = require('./services/fetchStockData');
+const cron = require('node-cron');
+const yahooFinance = require('yahoo-finance2').default;
+const iconv = require('iconv-lite');
+// 2. 初始化 app（这一步必须在使用 app 之前）
+const app = express();
+const axios = require('axios');
+>>>>>>> 49866d0 (Added language switching function)
 
 // 3. 再使用 app 进行配置
 app.use(cors()); // 启用跨域
@@ -22,16 +32,25 @@ app.use(express.static(path.join(__dirname, 'public'))); // 配置静态资源
 app.use(express.json()); // 解析 JSON 请求体
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // === 启动时 & 定时任务 定义 ===
 syncMarketData();  // 启动时先跑一次
 cron.schedule('*/5 * * * *', () => {
+=======
+// === 启动时 & 定时任务 定义 ===
+syncMarketData();  // 启动时先跑一次
+cron.schedule('*/30 * * * *', () => {
+>>>>>>> 49866d0 (Added language switching function)
   console.log('🔄 定时同步行情：', new Date());
   syncMarketData();
 });
 
 // === 路由定义 ===
+<<<<<<< HEAD
 =======
 >>>>>>> master
+=======
+>>>>>>> 49866d0 (Added language switching function)
 //获取总资产和资产分布
 app.get('/api/asset-data', async (req, res) => {
   try {
@@ -66,12 +85,17 @@ app.get('/api/asset-data', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49866d0 (Added language switching function)
 //查询每月流动资金和总资产
 app.get('/api/liquid-total-monthly', async (req, res) => {
   try {
     // 从数据库查询每月数据（按月份分组）
     const [rows] = await pool.execute(`
       SELECT 
+<<<<<<< HEAD
         stat_month AS month, 
         SUM(liquid_funds) AS liquid,
         SUM(stock + fund + bond + gold + liquid_funds) AS total
@@ -94,6 +118,46 @@ app.get('/api/liquid-total-monthly', async (req, res) => {
     while (monthlyData.length < 12) {
       monthlyData.push({ liquid: 0, total: 0, investment: 0 });
     }
+=======
+        DATE_FORMAT(stat_month, '%Y-%m') AS month, 
+        SUM(liquid_funds) AS liquid,
+        SUM(stock + fund + bond + gold + liquid_funds) AS total
+      FROM asset_monthly
+      GROUP BY DATE_FORMAT(stat_month, '%Y-%m')
+      ORDER BY DATE_FORMAT(stat_month, '%Y-%m')
+    `);
+
+    // 处理数据：确保返回12条记录，不足补0
+    const monthlyData = [];
+    
+    // 创建包含所有月份的数组
+    const allMonths = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = 1; i <= 12; i++) {
+      allMonths.push(`${currentYear}-${i.toString().padStart(2, '0')}`);
+    }
+    
+    // 创建映射以便快速查找
+    const dataMap = {};
+    rows.forEach(row => {
+      const liquid = Number(row.liquid) || 0;
+      const total = Number(row.total) || 0;
+      dataMap[row.month] = {
+        liquid: liquid,
+        total: total,
+        investment: total - liquid
+      };
+    });
+    
+    // 填充所有月份的数据
+    allMonths.forEach(month => {
+      if (dataMap[month]) {
+        monthlyData.push(dataMap[month]);
+      } else {
+        monthlyData.push({ liquid: 0, total: 0, investment: 0 });
+      }
+    });
+>>>>>>> 49866d0 (Added language switching function)
 
     res.json({
       success: true,
@@ -107,21 +171,34 @@ app.get('/api/liquid-total-monthly', async (req, res) => {
 //查询每月股票、基金、黄金、债券数据
 app.get('/api/asset-monthly-details', async (req, res) => {
   try {
+<<<<<<< HEAD
     // 查询每月各资产数据
     const [rows] = await pool.execute(`
       SELECT 
         stat_month AS month, 
+=======
+    // 查询每月各资产数据，按年月分组
+    const [rows] = await pool.execute(`
+      SELECT 
+        DATE_FORMAT(stat_month, '%Y-%m') AS month, 
+>>>>>>> 49866d0 (Added language switching function)
         SUM(stock) AS stock,
         SUM(fund) AS fund,
         SUM(gold) AS gold,
         SUM(bond) AS bond
       FROM asset_monthly
+<<<<<<< HEAD
       GROUP BY stat_month
       ORDER BY stat_month
+=======
+      GROUP BY DATE_FORMAT(stat_month, '%Y-%m')
+      ORDER BY DATE_FORMAT(stat_month, '%Y-%m')
+>>>>>>> 49866d0 (Added language switching function)
     `);
 
     // 处理数据：确保返回12条记录，不足补0
     const monthlyData = [];
+<<<<<<< HEAD
     for (let i = 0; i < Math.min(rows.length, 12); i++) {
       monthlyData.push({
         month: rows[i].month,
@@ -135,6 +212,43 @@ app.get('/api/asset-monthly-details', async (req, res) => {
       monthlyData.push({ month: `2023-${(monthlyData.length + 1).toString().padStart(2, '0')}`, stock: 0, fund: 0, gold: 0, bond: 0 });
     }
 
+=======
+
+    // 创建包含所有月份的数组
+    const allMonths = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = 1; i <= 12; i++) {
+      allMonths.push(`${currentYear}-${i.toString().padStart(2, '0')}`);
+    }
+
+    // 创建映射以便快速查找
+    const dataMap = {};
+    rows.forEach(row => {
+      dataMap[row.month] = {
+        month: row.month,
+        stock: Number(row.stock) || 0,
+        fund: Number(row.fund) || 0,
+        gold: Number(row.gold) || 0,
+        bond: Number(row.bond) || 0
+      };
+    });
+
+    // 填充所有月份的数据
+    allMonths.forEach(month => {
+      if (dataMap[month]) {
+        monthlyData.push(dataMap[month]);
+      } else {
+        monthlyData.push({
+          month: month,
+          stock: 0,
+          fund: 0,
+          gold: 0,
+          bond: 0
+        });
+      }
+    });
+
+>>>>>>> 49866d0 (Added language switching function)
     res.json({
       success: true,
       data: monthlyData
@@ -176,6 +290,7 @@ app.get('/api/annual-asset-sum', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 // 资产详情分页查询接口（仅分页展示所有数据）
@@ -224,6 +339,54 @@ app.get('/api/asset-details', async (req, res) => {
     const [data] = await pool.execute(sql, [offset + '', pageSize + '']);
 
     // 4. 返回标准化分页数据
+=======
+
+// 资产详情分页查询接口（支持分页和日期范围查询）
+app.get('/api/asset-details', async (req, res) => {
+  try {
+    // 1. 解析和验证分页参数
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize, 10) || 10));
+    const offset = Math.max(0, (page - 1) * pageSize);
+
+    // 2. 解析日期范围参数
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    // 3. 构建查询条件
+    let whereClause = '';
+    const countQueryParams = [];
+    const dataQueryParams = [];
+
+    if (startDate && endDate) {
+      whereClause = 'WHERE stat_month >= ? AND stat_month <= ?';
+      // 将 YYYY-MM 格式转换为可以匹配数据库日期的格式
+      countQueryParams.push(`${startDate}-01`, `${endDate}-31`);
+      dataQueryParams.push(`${startDate}-01`, `${endDate}-31`);
+    }
+
+    // 添加分页参数
+    dataQueryParams.push(offset + '', pageSize + '');
+
+    // 4. 查询总条数
+    const countSql = `SELECT COUNT(*) AS total FROM asset_monthly ${whereClause}`;
+    const [totalResult] = await pool.execute(countSql, countQueryParams);
+    const total = totalResult[0].total;
+    const totalPages = Math.ceil(total / pageSize);
+
+    // 5. 查询当前页数据
+    const dataSql = `
+      SELECT id, stat_month, stock, fund, gold, bond, liquid_funds
+      FROM asset_monthly
+      ${whereClause}
+      ORDER BY stat_month ASC
+      LIMIT ?, ?;
+    `;
+
+    const [data] = await pool.execute(dataSql, dataQueryParams);
+
+    // 6. 返回标准化分页数据
+>>>>>>> 49866d0 (Added language switching function)
     res.json({
       success: true,
       data: {
@@ -231,7 +394,11 @@ app.get('/api/asset-details', async (req, res) => {
         pagination: {
           currentPage: page,
           pageSize: pageSize,
+<<<<<<< HEAD
           totalRecords: Number(total), // 明确转为数字
+=======
+          totalRecords: Number(total),
+>>>>>>> 49866d0 (Added language switching function)
           totalPages: totalPages
         }
       }
@@ -241,6 +408,7 @@ app.get('/api/asset-details', async (req, res) => {
     res.status(500).json({
       success: false,
       error: '查询失败: ' + err.message,
+<<<<<<< HEAD
 =======
     
     // 关键修复：将参数转换为整数，并显式构造数组
@@ -265,12 +433,22 @@ app.get('/api/asset-details', async (req, res) => {
       debug: {
         page: req.query.page,
         pageSize: req.query.pageSize
+=======
+      debug: {
+        page: req.query.page,
+        pageSize: req.query.pageSize,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate
+>>>>>>> 49866d0 (Added language switching function)
       }
     });
   }
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 49866d0 (Added language switching function)
 // 删除资产接口，使用id作为删除条件
 app.delete('/api/asset-details', async (req, res) => {
   try {
@@ -314,6 +492,7 @@ app.delete('/api/asset-details', async (req, res) => {
 
 // 添加资产详情数据
 app.post('/api/asset-details', async (req, res) => {
+<<<<<<< HEAD
     try {
         const { stat_month, stock, fund, gold, bond, liquid_funds } = req.body;
         
@@ -341,6 +520,35 @@ app.post('/api/asset-details', async (req, res) => {
         console.error('添加数据错误:', error);
         res.json({ success: false, error: '服务器内部错误' });
     }
+=======
+  try {
+    const { stat_month, stock, fund, gold, bond, liquid_funds } = req.body;
+
+    // 验证必填字段
+    if (!stat_month) {
+      return res.json({ success: false, error: '时间字段是必需的' });
+    }
+
+    // 插入数据到数据库
+    const query = `
+            INSERT INTO asset_monthly (stat_month, stock, fund, gold, bond, liquid_funds) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+    const values = [stat_month, stock || 0, fund || 0, gold || 0, bond || 0, liquid_funds || 0];
+
+    // 执行数据库查询
+    const result = await pool.execute(query, values);
+
+    res.json({
+      success: true,
+      message: '数据添加成功',
+      id: result.insertId
+    });
+  } catch (error) {
+    console.error('添加数据错误:', error);
+    res.json({ success: false, error: '服务器内部错误' });
+  }
+>>>>>>> 49866d0 (Added language switching function)
 });
 
 // 获取热门基金排行榜（修正版）
@@ -374,6 +582,7 @@ app.get('/api/fund/rankings', async (req, res) => {
     // 尝试提取数据
     let funds = [];
 
+<<<<<<< HEAD
     // 方法1：尝试匹配 rankData
     const rankDataMatch = dataStr.match(/var\s+rankData\s*=\s*(\{[\s\S]*?\});/);
     if (rankDataMatch && rankDataMatch[1]) {
@@ -385,6 +594,19 @@ app.get('/api/fund/rankings', async (req, res) => {
         console.log('方法1解析失败:', e.message);
       }
     }
+=======
+    // // 方法1：尝试匹配 rankData
+    // const rankDataMatch = dataStr.match(/var\s+rankData\s*=\s*(\{[\s\S]*?\});/);
+    // if (rankDataMatch && rankDataMatch[1]) {
+    //   try {
+    //     const rankData = JSON.parse(rankDataMatch[1]);
+    //     funds = rankData.datas || [];
+    //     console.log('方法1成功，获取到基金数:', funds.length);
+    //   } catch (e) {
+    //     console.log('方法1解析失败:', e.message);
+    //   }
+    // }
+>>>>>>> 49866d0 (Added language switching function)
 
     // 方法2：如果方法1失败，尝试直接匹配 datas
     if (funds.length === 0) {
@@ -482,6 +704,11 @@ app.get('/api/fund/rankings', async (req, res) => {
 });
 
 
+<<<<<<< HEAD
+=======
+// 股票名称搜索接口
+
+>>>>>>> 49866d0 (Added language switching function)
 // GET /api/search?q=关键词
 app.get('/api/search', async (req, res) => {
   const q = (req.query.q || '').trim();
@@ -622,9 +849,135 @@ app.get('/api/SH/top', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 =======
 // 启动服务器
 >>>>>>> master
+=======
+// 在 app.js 中新增：
+
+/**
+ * GET /api/asset-monthly
+ * 返回格式：[{ stat_month: '2025-01', stock: 123, bond: 456, fund: 789, gold: 12, liquid_funds: 34 }, …]
+ */
+app.get('/api/asset-monthly', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT
+        DATE_FORMAT(stat_month, '%Y-%m') AS stat_month,
+        stock,
+        bond,
+        fund,
+        gold,
+        liquid_funds
+      FROM asset_monthly
+      ORDER BY stat_month
+    `);
+    // 直接返回数组
+    res.json(rows);
+  } catch (err) {
+    console.error('[/api/asset-monthly] 查询失败：', err);
+    res.status(500).json({ error: '查询 asset_monthly 失败' });
+  }
+});
+
+//投资收益率
+// 2. 接口：最新一期分项收益 & 组合月度收益
+app.get('/api/portfolio/summary', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT stat_month, total_value,
+             total_stock, total_bond, total_fund, total_gold, total_liquid
+      FROM monthly_summary
+      ORDER BY stat_month DESC
+      LIMIT 2
+    `);
+    if (rows.length < 2) {
+      return res.json({ success:false, msg:'数据不足两个月' });
+    }
+    const [curr, prev] = rows;
+    // 直接截取字符串 "YYYY-MM"
+    const monthStr = typeof curr.stat_month === 'string'
+        ? curr.stat_month.slice(0,7)
+        : curr.stat_month.toISOString().slice(0,7);
+
+    const assets = ['stock','bond','fund','gold','liquid'];
+    const items = assets.map(a => {
+      const key = 'total_' + a;
+      const ret = prev[key] > 0
+          ? (curr[key]/prev[key] - 1) * 100
+          : 0;
+      return { asset: a, return:+ret.toFixed(2) };
+    });
+
+    const portRet = prev.total_value > 0
+        ? (curr.total_value/prev.total_value - 1) * 100
+        : 0;
+
+    res.json({
+      success:  true,
+      month:    monthStr,
+      port_ret: +portRet.toFixed(2),
+      items
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success:false, error:e.message });
+  }
+});
+
+// 3. 接口：所有月度的组合当月 & 累计收益及分项收益
+app.get('/api/portfolio/trend', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT DATE_FORMAT(stat_month,'%Y-%m') AS month,
+             total_value,
+             total_stock, total_bond, total_fund, total_gold, total_liquid
+      FROM monthly_summary
+      ORDER BY stat_month
+    `);
+    if (rows.length < 2) {
+      return res.json({ success:true, stats: [] });
+    }
+    const stats = [];
+    let cumFactor = 1;
+    for (let i = 1; i < rows.length; i++) {
+      const prev = rows[i-1], cur = rows[i];
+      // 计算分项收益率
+      const calcRet = key =>
+          prev[key] > 0 ? (cur[key]/prev[key] - 1)*100 : 0;
+      const ret_stock   = calcRet('total_stock');
+      const ret_bond    = calcRet('total_bond');
+      const ret_fund    = calcRet('total_fund');
+      const ret_gold    = calcRet('total_gold');
+      const ret_liquid  = calcRet('total_liquid');
+      // 组合当月 & 累计
+      const port_ret = calcRet('total_value');
+      cumFactor *= (1 + port_ret/100);
+
+      stats.push({
+        month:      cur.month,
+        ret_stock:  +ret_stock.toFixed(2),
+        ret_bond:   +ret_bond.toFixed(2),
+        ret_fund:   +ret_fund.toFixed(2),
+        ret_gold:   +ret_gold.toFixed(2),
+        ret_liquid: +ret_liquid.toFixed(2),
+        port_ret:   +port_ret.toFixed(2),
+        cum_ret:    +((cumFactor-1)*100).toFixed(2)
+      });
+    }
+    res.json({ success:true, stats });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success:false, error:e.message });
+  }
+});
+
+
+
+
+
+>>>>>>> 49866d0 (Added language switching function)
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`服务器已启动，访问地址：http://localhost:${PORT}`);

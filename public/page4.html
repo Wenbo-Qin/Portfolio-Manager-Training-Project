@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>投资项目管理系统 - 组合评估</title>
+
+  <!-- 仅保留必须的依赖 -->
+  <script src="js/jquery.js"></script>
+  <script src="js/echarts.min.js"></script>
+  <script type="text/javascript" src="js/lang.js"></script>
+
+
+  <!-- 你现有的公用样式 -->
+  <link rel="stylesheet" href="css/comon0.css">
+
+  <style>
+    /* 评估页面专有布局优化 */
+    #kpi-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 1.5rem auto;
+      padding: 10px 0;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      max-width: 1200px;
+    }
+
+    .kpi-card {
+      flex: 0 0 180px;
+      text-align: center;
+      padding: 1rem;
+      border: 1px solid rgba(73, 188, 247, 0.3);
+      border-radius: 8px;
+      background: var(--card-bg);
+      transition: all 0.3s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(73, 188, 247, 0.2);
+      border-color: rgba(73, 188, 247, 0.5);
+    }
+
+    .kpi-card h3 {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: normal;
+    }
+
+    .kpi-card .value {
+      color: #49bcf7;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .kpi-card .desc {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+    }
+
+    /* 图表容器居中设置 */
+    .charts-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .charts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      width: 100%;
+      max-width: 1200px;
+      box-sizing: border-box; /* 新增 */
+    }
+
+    .chart {
+      flex: 0 0 calc(50% - 0.75rem);
+      min-height: 350px;
+      border-radius: 8px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+      min-width: 300px; /* 新增：设置最小宽度，避免过窄 */
+    }
+
+    #refresh-btn {
+      margin: 1.5rem auto;
+      display: block;
+      padding: 0.6rem 1.2rem;
+      background: linear-gradient(to right, #49bcf7, #5ea99c);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    #refresh-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(73, 188, 247, 0.3);
+    }
+
+    #refresh-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 主容器优化 */
+    .mainbox {
+      padding: 20px;
+    }
+
+    .boxall {
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .alltitle {
+      font-size: 22px;
+      margin: 0 auto 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 1200px;
+    }
+
+    /* 响应式优化：小屏幕自动改为一行一个 */
+    @media screen and (max-width: 768px) {
+      .chart {
+        flex: 0 0 100%; /* 小屏幕占满宽度 */
+      }
+
+      .kpi-card {
+        flex: 0 0 140px;
+      }
+
+      .boxall {
+        padding: 15px;
+      }
+
+      .chart {
+        min-height: 250px;
+      }
+    }
+
+    /* 亮色模式适配 */
+    .light-mode .kpi-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .light-mode .kpi-card h3 {
+      color: #333;
+    }
+
+    .light-mode .chart {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .light-mode #refresh-btn {
+      background: linear-gradient(to right, #0066cc, #0099ff);
+    }
+  </style>
+</head>
+<body>
+<!-- 头部（与主页面保持一致） -->
+<button id="bgToggle" class="toggle-btn"></button>
+<!-- 新增语言切换按钮（放在bgToggle后面） -->
+<div class="lang-switch">
+  <button class="lang-btn active" data-lang="zh">中文</button>
+  <button class="lang-btn" data-lang="en">English</button>
+</div>
+<div class="head">
+  <div class="weather"><span id="showTime"></span></div>
+  <h1 data-i18n="portfolio-evaluation-title"><a style="color: white">投资项目评估</a></h1>
+</div>
+
+<!-- 时间脚本 -->
+<script>
+  (function tick(){
+    const dt=new Date();
+    document.getElementById("showTime").textContent=
+            `${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`
+            + `${dt.getHours()}时${dt.getMinutes()}分${dt.getSeconds()}秒`;
+    setTimeout(tick,1000);
+  })();
+</script>
+
+<!-- 评估主体 -->
+<div class="mainbox">
+  <div class="boxall" style="min-height:700px;">
+    <div class="alltitle" data-i18n="portfolio-evaluation-title">投资组合优劣性评估</div>
+
+    <div id="kpi-summary"></div>
+
+    <div class="charts-container">
+      <div class="charts">
+        <div id="drawdown-chart"    class="chart"></div>
+        <div id="risk-return-chart" class="chart"></div>
+        <div id="var-chart"         class="chart"></div>
+        <div id="cvar-chart"        class="chart"></div>
+      </div>
+    </div>
+
+    <button id="refresh-btn" data-i18n="refresh-indicators">刷新指标</button>
+  </div>
+</div>
+
+<!-- 暗黑/浅色模式切换脚本 -->
+<script>
+  if (localStorage.getItem('useDarkMode')==='true') {
+    document.body.classList.add('dark-mode');
+  }
+  document.getElementById('bgToggle').onclick = ()=>{
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));
+  };
+</script>
+
+<!-- 指标脚本（一定要在上面所有 DOM 之后） -->
+<script src="js/metrics.js"></script>
+</body>
+</html>
+
+
+
+
+<!--原始-->
+<!--<!doctype html>-->
+<!--<html lang="zh-CN">-->
+<!--<head>-->
+<!--  <meta charset="utf-8">-->
+<!--  <title>投资项目管理系统 - 组合评估</title>-->
+
+<!--  &lt;!&ndash; 仅保留必须的依赖 &ndash;&gt;-->
+<!--  <script src="js/jquery.js"></script>-->
+<!--  <script src="js/echarts.min.js"></script>-->
+
+<!--  &lt;!&ndash; 你现有的公用样式 &ndash;&gt;-->
+<!--  <link rel="stylesheet" href="css/comon0.css">-->
+
+<!--  <style>-->
+<!--    /* 评估页面专有布局 */-->
+<!--    #kpi-summary {-->
+<!--      display: flex;-->
+<!--      flex-wrap: wrap;-->
+<!--      gap: 1rem;-->
+<!--      margin: 1rem 0;-->
+<!--    }-->
+<!--    .kpi-card {-->
+<!--      width: 160px;-->
+<!--      text-align: center;-->
+<!--      padding: 0.5rem;-->
+<!--      border: 1px solid #ddd;-->
+<!--      border-radius: 4px;-->
+<!--      background: var(&#45;&#45;card-bg);-->
+<!--    }-->
+<!--    .charts {-->
+<!--      display: flex;-->
+<!--      flex-wrap: wrap;-->
+<!--      gap: 1rem;-->
+<!--    }-->
+<!--    .chart {-->
+<!--      flex: 1 1 45%;-->
+<!--      min-height: 300px;-->
+<!--    }-->
+<!--    #refresh-btn {-->
+<!--      margin-top: 1rem;-->
+<!--      padding: 0.5rem 1rem;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--  &lt;!&ndash; 头部（与主页面保持一致） &ndash;&gt;-->
+<!--  <button id="bgToggle" class="toggle-btn"></button>-->
+<!--  <div class="head">-->
+<!--    <div class="weather"><span id="showTime"></span></div>-->
+<!--    <h1><a style="color: white">投资项目评估</a></h1>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; 时间脚本 &ndash;&gt;-->
+<!--  <script>-->
+<!--    (function tick(){-->
+<!--      const dt=new Date();-->
+<!--      document.getElementById("showTime").textContent=-->
+<!--        `${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`-->
+<!--        + `${dt.getHours()}时${dt.getMinutes()}分${dt.getSeconds()}秒`;-->
+<!--      setTimeout(tick,1000);-->
+<!--    })();-->
+<!--  </script>-->
+
+<!--  &lt;!&ndash; 评估主体 &ndash;&gt;-->
+<!--  <div class="mainbox">-->
+<!--    <div class="boxall" style="min-height:700px;">-->
+<!--      <div class="alltitle">投资组合优劣性评估</div>-->
+
+<!--      <div id="kpi-summary"></div>-->
+
+<!--      <div class="charts">-->
+<!--        <div id="drawdown-chart"    class="chart"></div>-->
+<!--        <div id="risk-return-chart" class="chart"></div>-->
+<!--        <div id="var-chart"         class="chart"></div>-->
+<!--        <div id="cvar-chart"        class="chart"></div>-->
+<!--      </div>-->
+
+<!--      <button id="refresh-btn">刷新指标</button>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; 暗黑/浅色模式切换脚本 &ndash;&gt;-->
+<!--  <script>-->
+<!--    if (localStorage.getItem('useDarkMode')==='true') {-->
+<!--      document.body.classList.add('dark-mode');-->
+<!--    }-->
+<!--    document.getElementById('bgToggle').onclick = ()=>{-->
+<!--      document.body.classList.toggle('dark-mode');-->
+<!--      localStorage.setItem('useDarkMode', document.body.classList.contains('dark-mode'));-->
+<!--    };-->
+<!--  </script>-->
+
+<!--  &lt;!&ndash; 指标脚本（一定要在上面所有 DOM 之后） &ndash;&gt;-->
+<!--  <script src="js/metrics.js"></script>-->
+<!--</body>-->
+<!--</html>-->
